@@ -1,0 +1,160 @@
+body {
+    /*font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    background-color: #252830;
+    color: #cfd2da;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    .navbar-button-collapsed {
+        display: none;
+    }
+}
+
+hr {
+    border-color: #434857;
+}
+
+.navbar-brand-link {
+    color: #1CA8DD;
+}
+
+.navbar-brand-link:hover {
+    color: #42BCEA
+}
+
+.navbar-upper {
+    padding-bottom: 20px;
+}
+
+.navbar-form-search {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.navbar-button-search {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 9px 10px;
+    color: #b7bcc8;
+    border: 0;
+    line-height: 0;
+    background-color: transparent;
+}
+
+.navbar-button-collapsed {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    width: 40px;
+    padding: 5px;
+    font-size: 16px;
+    background: transparent;
+    border: 1px solid #434857;
+    border-radius: 4px;
+    color: #1CA8DD;
+}
+
+.navbar-button-collapsed:hover {
+    color: #42BCEA;
+    border-color: #42BCEA;
+    background-color: #434857;
+}
+
+.navbar-collapse {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.form-control {
+    height: 35px;
+    line-height: 1.5;
+    color: #ffffff;
+    background-color: #434857;
+    border: 1px solid #434857;
+}
+
+#navbarCollapse .nav li a {
+    color: #cfd2da;
+    padding: 7px 15px;
+}
+
+#navbarCollapse .nav li a:hover {
+    background-color: #434857;
+}
+
+#navbarCollapse .nav li.active a {
+    background-color: #1CA8DD;
+    color: #252830;
+    font-weight: 500;
+}
+
+#navbarCollapse .nav li.active a:hover {
+    background-color: #1CA8DD;
+}
+
+.input-search {
+    padding-left: 15px;
+    padding-right: 15px
+}
+th{
+    font-weight: bold;
+}
+.table thead tr th{
+    vertical-align: bottom;
+    border-bottom: 3px solid #434857;
+    line-height: 1.5;
+}
+.table tbody tr td{
+    vertical-align: top;
+    border-top: 1px solid #434857;
+    line-height: 1.5;
+}
+.div-table-search{
+    padding-bottom: 15px
+}
+.table-text-search{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+.table-text-search input{
+    padding-left: 30px;
+}
+.table-text-search .search-icon{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #ccc;
+}
+.pagination li a{
+    color: #51586a;
+    background-color: #252830;
+    border-color: #434857;
+    line-height: 1.5;
+}
+.pagination li a:hover{
+    color: #ffffff;
+    background-color: #434857;
+    border-color: #434857;
+}
+.pagination li.active a{
+    background-color: #51586a;
+    border-color: #51586a;
+}
+.pagination li.active a:hover{
+    background-color: #51586a;
+    border-color: #51586a;
+}
+.table-responsive{
+    border: none;
+}

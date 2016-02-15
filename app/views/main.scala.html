@@ -1,0 +1,78 @@
+@(title: String, contentTitle: String)(content: Html)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>@title</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/font-awesome/css/font-awesome.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("lib/bootstrap/js/bootstrap.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/app.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("js/main.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-3">
+                    <nav class="navbar navbar-left">
+                        <div class="navbar-upper">
+                            <a class="navbar-brand-link" href="/">
+                                <span class="fa fa-cloud fa-3x"></span>
+                            </a>
+                            <span class="h6" style="position: relative ; left:5px ; bottom: 10px">
+                                Course Monitoring Reports</span>
+                            <button class="collapsed navbar-button-collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-expanded="false">
+                                <span class="fa fa-bars"></span>
+                            </button>
+                        </div>
+                        <div id="navbarCollapse" class="navbar-bottom collapse navbar-collapse" aria-expanded="false">
+                            <form class="navbar-form-search">
+                                <input class="form-control input-search" type="text" placeholder="Search...">
+                                <button type="submit" class="navbar-button-search">
+                                    <span class="fa fa-search"></span>
+                                </button>
+                            </form>
+                            <ul class="nav nav-pills nav-stacked">
+                                <li role="presentation">
+                                    <a href="#"><span class="fa fa-bell"></span> <span class="badge">
+                                        14</span> Notification </a>
+                                </li>
+                                <li><hr/></li>
+                                <li role="presentation" class="active"><a href="/" ><span class="fa fa-home"></span>
+                                    Home</a>
+                                </li>
+                                <li role="presentation"><a href="/course-report"><span class="fa fa-pencil-square-o"></span>
+                                    Course Report</a>
+                                </li>
+                                <li role="presentation"><a href="/courses"><span class="fa fa-book"></span>
+                                    Courses</a>
+                                </li>
+                                <li role="presentation"><a href="#">Some function</a></li>
+                                <li><hr/></li>
+                                <li role="presentation"><a href="#"><span class="fa fa-user"></span> Profile</a></li>
+                                <li role="presentation"><a href="#"><span class="fa fa-sign-out"></span> Sign Out</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div class="col-sm-8 col-md-8 col-lg-9">
+                    <div id="content-header" class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <h1>@contentTitle</h1>
+                        </div>
+                    </div>
+                    <div class="row"><div class="col-sm-12 col-md-12 col-lg-12"><hr/></div></div>
+                    <div id="content" class="row">
+                    @content
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
