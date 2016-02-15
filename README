@@ -3,9 +3,19 @@ This is a coursework for Enterprise Web Software Development
 
 Configuration :
 * You must to separate run sql "conf/evolutions/default/usp_createCMR.sql" by SQL Management Studio after you run project
-
 * Config your DATABASE and your MAILER for testing or running in "conf/application.conf"
 slick.dbs.default.db.url="Your url"
 slick.dbs.default.db.user="Your username"
 slick.dbs.default.db.password="Your password"
 
+Running project:
+Step 1 : You must install activator first "https://www.playframework.com/download"
+  * For Windows : 
+   - After install activator -> Run file activator.bat
+  * For Linux :
+   - After install activator -> Open terminal cd to your directory -> ./activator
+
+Step 2 : Open your SQL Management Studio copy "conf/evolutions/default/usp_createCMR.sql" and run
+
+Coding:
+Import sbt project to your favor IDE (Netbean, Eclipse, Idea...) -> Running project by command <code>activator run</code>
