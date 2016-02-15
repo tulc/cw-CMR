@@ -3,3 +3,9 @@ This is coursework of Enterprise Web Software Development
 
 Configuration :
 * You must to separate run sql "conf/evolutions/default/usp_createCMR.sql" by SQL Management Studio after you run project
+
+* Config your DATABASE and your MAILER for testing or running in "conf/application.conf"
+slick.dbs.default.db.url="Your url"
+slick.dbs.default.db.user="Your username"
+slick.dbs.default.db.password="Your password"
+
