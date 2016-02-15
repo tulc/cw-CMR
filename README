@@ -18,4 +18,4 @@ Step 1 : You must install activator first "https://www.playframework.com/downloa
 Step 2 : Open your SQL Management Studio copy "conf/evolutions/default/usp_createCMR.sql" and run
 
 Coding:
-Import sbt project to your favor IDE (Netbean, Eclipse, Idea...) -> Running project by command "activator run"
+Import "SBT" project to your favor IDE (Netbean, Eclipse, Idea...) -> Running project by command "activator run"
