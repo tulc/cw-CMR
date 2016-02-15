@@ -1,4 +1,5 @@
-This is your new Play application
+This is coursework of Enterprise Web Software Development
 =================================
 
-This file will be packaged with your application, when using `activator dist`.
+Configuration :
+You must to separate run sql usp_createCMR.sql by SQL Management Studio after you run project
