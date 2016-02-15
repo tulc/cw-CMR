@@ -2,4 +2,4 @@ This is coursework of Enterprise Web Software Development
 =================================
 
 Configuration :
-You must to separate run sql usp_createCMR.sql by SQL Management Studio after you run project
+* You must to separate run sql "conf/evolutions/default/usp_createCMR.sql" by SQL Management Studio after you run project
