@@ -162,8 +162,13 @@ th{
     padding: 0;
 }
 .table.table-bordered th{
-    border-bottom-color: #ddd;
+    border-bottom-color: #cfd2da;
 }
-.table tr.info{
-    color: #434857;
+.table-title{
+    background-color:#cfd2da;
+    color:#252830;
+}
+.modal-content{
+    background-color: #cfd2da;
+    color: #252830;
 }

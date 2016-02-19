@@ -10,6 +10,8 @@ GET     /courses                        controllers.CourseController.getCourses
 
 #CMR Report page
 POST    /addReport                      controllers.CMRController.addCMRReport(courseId: String)
-GET     /report/:cmrId                      controllers.CMRController.getCMRReport(cmrId: Int)
+DELETE  /report/:cmrId                  controllers.CMRController.removeCMRReport(cmrId: Int)
+GET     /report/:cmrId                  controllers.CMRController.getCMRReport(cmrId: Int)
+PUT     /report/                        controllers.CMRController.submitCMR
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                   controllers.Assets.versioned(path="/public", file: Asset)

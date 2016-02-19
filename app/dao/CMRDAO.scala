@@ -8,7 +8,7 @@ import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 /**
   * Created by chinhnk on 2/14/16.
@@ -42,12 +42,16 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
   private lazy val courses = TableQuery[Courses]
   private lazy val users = TableQuery[Users]
 
-  def insertAndReturnCMRId(courseId:String, userId:Int): Future[Int] ={
+  def insertCMR(courseId:String, userId:Int): Future[Int] ={
     db.run(sqlu"EXECUTE usp_createCMR @courseId = $courseId, @userId = $userId")
-    db.run(sql"SELECT cmrId FROM CMR WHERE courseId = $courseId AND userCreateId = $userId".as[Int]).map(x => x.head)
   }
 
   def findCMRByCourseId(courseId: String): Future[Seq[CMR]] = db.run(cmrs.filter(_.courseId === courseId).result)
 
   def findCMRById(id: Int) : Future[Seq[CMR]] = db.run(cmrs.filter(_.cmrId === id).result)
+
+  def removeCMRById(id: Int) : Future[Int] = db.run(cmrs.filter(_.cmrId === id).delete)
+
+  def findMaxId(courseId:String,userCreateId: Int) : Future[Int] = db.run(
+    cmrs.filter(_.courseId===courseId).filter(_.userCreateId===userCreateId).result).map(x => x.head.cmrId)
 }

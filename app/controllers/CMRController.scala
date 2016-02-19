@@ -42,9 +42,20 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, userDAO: Use
       } else if (cmr.nonEmpty) {
         Redirect(routes.CourseController.getCourses()).flashing("info" -> "Can not create Course Monitoring Report. Because CMR has been created", "link" -> "/report/%s".format(cmr.head.cmrId))
       } else {
-        val cmrId = Await.result(cmrDAO.insertAndReturnCMRId(courseId, 10), Duration(2, SECONDS))
+        Await.result(cmrDAO.insertCMR(courseId, 10), Duration(2, SECONDS))
+        val cmrId = Await.result(cmrDAO.findMaxId(courseId,10),Duration(2, SECONDS))
         Redirect(routes.CourseController.getCourses()).flashing("success" -> "Course Monitoring Report has been created", "link" -> "/report/%s".format(cmrId))
       }
     }
+  }
+
+  def removeCMRReport(cmrId: Int) = Action.async { implicit request =>
+    cmrDAO.removeCMRById(cmrId).map(rowRemove =>
+      Ok(rowRemove.toString)
+    )
+  }
+  //TODO: complete submitCMR -> chage status -> submited -> sendEmail
+  def submitCMR = Action.async { implicit request =>
+    ???
   }
 }
