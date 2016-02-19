@@ -158,3 +158,6 @@ th{
 .table-responsive{
     border: none;
 }
+.table-responsive .btn.btn-link{
+    padding: 0;
+}

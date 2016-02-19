@@ -1,30 +1,46 @@
-@(courseList: Seq[(Course, Faculty, User)], user: Seq[User])
-
-@main("Course Monitoring Reports", "Courses") {
-    <div class="row div-table-search">
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <div class="table-text-search">
-                <input type="text" class="form-control" placeholder="Search information" />
-                <span class="fa fa-search search-icon"></span>
+@(courseList: Seq[(Course, Faculty, User)], user: Seq[User])(implicit flash: play.api.mvc.Flash, messages: Messages)
+    @main("Course Monitoring Reports", "Courses") {
+        @flash.get("success").map { message =>
+            <div class="alert alert-success">
+                <strong>Done!</strong> @message
+                . <a href="@flash.get("link")">Click here to view report</a>
+            </div>
+        }
+        @flash.get("error").map { message =>
+            <div class="alert alert-warning">
+                <strong>Opps!</strong> @message
+            </div>
+        }
+        @flash.get("info").map { message =>
+            <div class="alert alert-info">
+                @message
+                . <a href="@flash.get("link")">Click here to view report</a>
+            </div>
+        }
+        <div class="row div-table-search">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="table-text-search">
+                    <input type="text" class="form-control" placeholder="Search information" />
+                    <span class="fa fa-search search-icon"></span>
+                </div>
             </div>
         </div>
-    </div>
-    <div>
-        <table class="table table-responsive">
-            <thead>
-                <tr>
-                    <th class="header">Course</th>
-                    <th class="header">Faculty</th>
-                    <th class="header">Session</th>
-                    <th class="header">Student</th>
-                    <th class="header">Start</th>
-                    <th class="header">End</th>
-                    <th class="header">CM</th>
-                    <th class="header">CL</th>
-                    <th class="header">#</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div>
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="header">Course</th>
+                        <th class="header">Faculty</th>
+                        <th class="header">Session</th>
+                        <th class="header">Student</th>
+                        <th class="header">Start</th>
+                        <th class="header">End</th>
+                        <th class="header">CM</th>
+                        <th class="header">CL</th>
+                        <th class="header">#</th>
+                    </tr>
+                </thead>
+                <tbody>
                 @for(c <- courseList) {
                     <tr>
                         <td>@c._1.courseId</td>
@@ -35,10 +51,14 @@
                         <td>@c._1.endDate</td>
                         <td>@c._3.firstName @c._3.lastName</td>
                         <td>@user.head.firstName @user.head.lastName</td>
-                        <td><a href="@routes.Application.createReport(c._1.courseId)">Create report</a></td>
+                        <td>
+                            <form action="@routes.CMRController.addCMRReport(c._1.courseId)">
+                                <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
+                            </form>
+                        </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
-}
+                </tbody>
+            </table>
+        </div>
+    }

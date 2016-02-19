@@ -57,5 +57,5 @@ class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     db.run(query.sortBy(_._1.endDate.desc).result)
   }
 
-  def findById(id:String): Future[Seq[Course]] = db.run(courses.filter(_.courseId === id).result)
+  def findById(id:String): Future[Option[Course]] = db.run(courses.filter(_.courseId === id).result.headOption)
 }

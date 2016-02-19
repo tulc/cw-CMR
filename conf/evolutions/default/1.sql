@@ -136,7 +136,7 @@ INSERT INTO UserRole VALUES (4, 2); --Tu PVC
 INSERT INTO Faculty VALUES ('Computer Science', 4, 3, 1);
 
 INSERT INTO Course VALUES ('C00001', 'Spring', 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 10, 4);
-INSERT INTO Course VALUES ('C00002', 'Spring', 15, DEFAULT, GETDATE(), GETDATE() + 155, 1, 10, 4);
+INSERT INTO Course VALUES ('C00002', 'Spring', 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 10, 4);
 
 -- 5 student 5 cw1
 INSERT INTO Score VALUES (20, 1, 'C00001');

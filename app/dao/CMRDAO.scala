@@ -42,9 +42,9 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
   private lazy val courses = TableQuery[Courses]
   private lazy val users = TableQuery[Users]
 
-  def insertAndReturnCMRId(courseId:String, userId:Int): Future[Seq[Int]] ={
+  def insertAndReturnCMRId(courseId:String, userId:Int): Future[Int] ={
     db.run(sqlu"EXECUTE usp_createCMR @courseId = $courseId, @userId = $userId")
-    db.run(sql"SELECT cmrId FROM CMR WHERE courseId = $courseId AND userId = $userId".as[Int])
+    db.run(sql"SELECT cmrId FROM CMR WHERE courseId = $courseId AND userCreateId = $userId".as[Int]).map(x => x.head)
   }
 
   def findCMRByCourseId(courseId: String): Future[Seq[CMR]] = db.run(cmrs.filter(_.courseId === courseId).result)
