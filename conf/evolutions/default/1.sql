@@ -47,6 +47,7 @@ CREATE TABLE Faculty (
 
 CREATE TABLE Course (
   CourseId        VARCHAR(10) PRIMARY KEY,
+  Title           VARCHAR(50) NOT NULL ,
   AcademicSession VARCHAR(50) NOT NULL,
   StudentNumber   INT         NOT NULL,
   CreateDate      DATE DEFAULT GETDATE(),
@@ -135,8 +136,8 @@ INSERT INTO UserRole VALUES (4, 2); --Tu PVC
 
 INSERT INTO Faculty VALUES ('Computer Science', 4, 3, 1);
 
-INSERT INTO Course VALUES ('C00001', 'Spring', 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 10, 4);
-INSERT INTO Course VALUES ('C00002', 'Spring', 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 10, 4);
+INSERT INTO Course VALUES ('C00001','Software Engineering', 'Spring', 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 10, 4);
+INSERT INTO Course VALUES ('C00002','Database Analyst' ,'Spring', 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 10, 4);
 
 -- 5 student 5 cw1
 INSERT INTO Score VALUES (20, 1, 'C00001');

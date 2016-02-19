@@ -19,16 +19,16 @@ case class Role(roleId: Int, shortName: String, name: String, description: Strin
 
 case class Faculty(facultyId: Int, name: String, pvcId: Int, dltId: Int, isActive: Char)
 
-case class Course(courseId: String, academicSession: String, studentNumber: Int,
+case class Course(courseId: String, title: String, academicSession: String, studentNumber: Int,
                   createDate: Date, startDate: Date, endDate: Date, facultyId: Int, clId: Int, cmId: Int)
 
 case class CMR(cmrId: Int, status: String, createDate: Date, userCreateId: Int, courseId: String,
                userApprovedId: Option[Int], approvedDate: Option[Date], comment: Option[String],
                userCommentedId: Option[Int], commentedDate: Option[Date])
 
-case class GradeStatistic(cmrId: Int, statisticType: String, assessmentMethodId: Int, value: Float)
+case class GradeStatistic(cmrId: Int, statisticType: String, assessmentMethodId: Int, value: Option[Float])
 
-case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionType: String, value: Int)
+case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionType: String, value: Option[Int])
 
 case class AssessmentMethod(assessmentMethodId: Int, priority: Int, name: String, description: String, isActive: Char)
 

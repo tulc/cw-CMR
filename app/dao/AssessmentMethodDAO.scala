@@ -6,6 +6,8 @@ import models.AssessmentMethod
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
+import scala.concurrent.Future
+
 /**
   * Created by chinhnk on 2/15/16.
   */
@@ -30,5 +32,7 @@ class AssessmentMethodDAO @Inject()(protected val dbConfigProvider:DatabaseConfi
   import driver.api._
 
   private lazy val assessmentMethods = TableQuery[AssessmentMethods]
+
+  def findAll : Future[Seq[AssessmentMethod]] = db.run(assessmentMethods.sortBy(a => a.priority.asc).result)
 
 }

@@ -161,3 +161,9 @@ th{
 .table-responsive .btn.btn-link{
     padding: 0;
 }
+.table.table-bordered th{
+    border-bottom-color: #ddd;
+}
+.table tr.info{
+    color: #434857;
+}

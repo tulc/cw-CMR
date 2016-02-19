@@ -20,7 +20,7 @@ class GradeStatisticDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
     def cmrId = column[Int]("CMRId",O.PrimaryKey)
     def statisticType = column[String]("StatisticType",O.PrimaryKey)
     def assessmentMethodId = column[Int]("AssessmentMethodId",O.PrimaryKey)
-    def value = column[Float]("Value")
+    def value = column[Option[Float]]("Value")
 
     def * = (cmrId,statisticType,assessmentMethodId,value) <> ((GradeStatistic.apply _).tupled, GradeStatistic.unapply _)
 
@@ -30,6 +30,6 @@ class GradeStatisticDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
   private lazy val assessmentMethods = TableQuery[AssessmentMethods]
   private lazy val gradeStatistics = TableQuery[GradeStatistics]
 
-  def findByCMRId(cmrId: Int): Future[Seq[GradeStatistic]] = db.run(
-    gradeStatistics.filter(_.cmrId === cmrId).result)
+  def findByCMRId(cmrId: Int): Future[Seq[GradeStatistic]] =
+    db.run(gradeStatistics.filter(_.cmrId === cmrId).result)
 }

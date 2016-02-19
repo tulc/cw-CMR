@@ -19,6 +19,7 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] with Facul
 
   class Courses(tag: Tag) extends Table[Course](tag, "Course") {
     def courseId = column[String]("CourseId", O.PrimaryKey)
+    def title = column[String]("Title")
     def academicSession = column[String]("AcademicSession")
     def studentNumber = column[Int]("StudentNumber")
     def createDate = column[Date]("CreateDate")
@@ -28,7 +29,7 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] with Facul
     def clId = column[Int]("CLId")
     def cmId = column[Int]("CMId")
 
-    def * = (courseId, academicSession, studentNumber, createDate, startDate, endDate, facultyId, clId, cmId) <>((Course.apply _).tupled, Course.unapply _)
+    def * = (courseId,title , academicSession, studentNumber, createDate, startDate, endDate, facultyId, clId, cmId) <>((Course.apply _).tupled, Course.unapply _)
 
     def faculty = foreignKey("Faculty", facultyId, faculties)(_.facultyId)
     def userCL = foreignKey("User", clId, users)(_.userId)

@@ -1,4 +1,101 @@
-@(cmr: CMR)
-    @main("Course Monitoring Reports", "Report "+ cmr.cmrId) {
-
+@(data: (Seq[CMR], Option[Course], Seq[User], Seq[GradeStatistic], Seq[GradeDistribution], Seq[AssessmentMethod]))
+    @main("Course Monitoring Reports", "Course Monitoring Report no." + data._1.head.cmrId) {
+        <table class="table table-bordered">
+            <thead>
+                <tr class="info">
+                    <th colspan="2" style="text-align: center"><h4><strong>Course Monitoring Report</strong></h4></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Academic Session :</td>
+                    <td>@data._2.head.academicSession</td>
+                </tr>
+                <tr>
+                    <td>Course Code + title :</td>
+                    <td>@data._2.head.courseId - @data._2.head.title</td>
+                </tr>
+                <tr>
+                    <td>Course Leader : </td>
+                    <td>@data._3.head.firstName @data._3.head.lastName</td>
+                </tr>
+                <tr>
+                    <td>Student count : </td>
+                    <td>@data._2.head.studentNumber</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="info">
+                    <th colspan="7">Statistical Data</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    @for(assessment <- data._6) {
+                        <th>@assessment.name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+            @Option(data._4.groupBy(_.statisticType)).map { statisticsGrouped =>
+                @statisticsGrouped.map { records =>
+                    <tr>
+                        <td>@records._1</td>
+                        @for(recordValue <- records._2) {
+                            <td>@recordValue.value</td>
+                        }
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="info">
+                    <th colspan="11">Grade Distribution Data</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    @data._5.filter(_.assessmentMethodId == 1).map { x =>
+                        <th>@x.distributionType</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+            @for(assessment <- data._6) {
+                <tr>
+                    <td>@assessment.name</td>
+                    @data._5.filter(_.assessmentMethodId == assessment.assessmentMethodId).map { x =>
+                        @if(x.value.get == 0) {
+                            <td></td>
+                        } else {
+                            <td>@x.value</td>
+                        }
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+        <table class="table">
+            <tr class="info">
+                <th>General comments</th>
+            </tr>
+            <tr class="info">
+                <td>When you complete this section, at a minimum, you should address the following:
+                    <ol>
+                        <li>The overview of the Course Leader (to include; comments on available statistics, the range of marks, assessment diet and any issues affecting the delivery of the course this year).</li>
+                        <li>Student Evaluation and Feedback.</li>
+                        <li>Comments of the External Examiner.</li>
+                        <li>A review of the previous year's action plan.</li>
+                    </ol>
+                </td>
+            </tr>
+            <form>
+                <tr><td><textarea class="form-control" rows="3"></textarea></td></tr>
+                <tr>
+                    <td><input type="button" value="Submit"></td>
+                </tr>
+            </form>
+        </table>
     }

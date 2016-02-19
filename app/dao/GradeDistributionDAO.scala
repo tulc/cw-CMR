@@ -2,7 +2,7 @@ package dao
 
 import javax.inject.{Inject, Singleton}
 
-import models.{GradeDistribution}
+import models.GradeDistribution
 import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
@@ -20,7 +20,7 @@ class GradeDistributionDAO @Inject()(protected val dbConfigProvider:DatabaseConf
     def cmrId = column[Int]("CMRId",O.PrimaryKey)
     def assessmentMethodId = column[Int]("AssessmentMethodId",O.PrimaryKey)
     def distributionType = column[String]("DistributionType",O.PrimaryKey)
-    def value = column[Int]("Value")
+    def value = column[Option[Int]]("Value")
 
     def * = (cmrId,assessmentMethodId,distributionType,value) <> ((GradeDistribution.apply _).tupled, GradeDistribution.unapply _)
 
