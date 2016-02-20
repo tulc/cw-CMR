@@ -1,4 +1,4 @@
-@(courseList: Seq[(Course, Faculty, User)], user: Seq[User])(implicit flash: play.api.mvc.Flash, messages: Messages)
+@(courseList: Seq[(Course, Faculty, User)], user: Option[User])(implicit flash: play.api.mvc.Flash, messages: Messages)
     @main("Course Monitoring Reports", "Courses") {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -54,7 +54,7 @@
                         <td>@c._3.firstName @c._3.lastName</td>
                         <td>@user.head.firstName @user.head.lastName</td>
                         <td>
-                            <form action="@routes.CMRController.addCMRReport(c._1.courseId)">
+                            <form action="@routes.CMRController.add(c._1.courseId)">
                                 <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
                             </form>
                         </td>

@@ -2,16 +2,27 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+###Login
+GET     /login                          controllers.Application.login
+POST    /login                          controllers.Application.authenticate
+GET     /logout                         controllers.Application.logout
+###Home page
 GET     /                               controllers.Application.index
 
-#Courses page
+###Courses page
 GET     /courses                        controllers.CourseController.getCourses
 
-#CMR Report page
-POST    /addReport                      controllers.CMRController.addCMRReport(courseId: String)
-DELETE  /report/:cmrId                  controllers.CMRController.removeCMRReport(cmrId: Int)
-GET     /report/:cmrId                  controllers.CMRController.getCMRReport(cmrId: Int)
-PUT     /report/                        controllers.CMRController.submitCMR
+###CMR
+#Get CMR
+GET     /report/:cmrId                  controllers.CMRController.get(cmrId: Int)
+#Add CMR
+POST    /report/add                     controllers.CMRController.add(courseId: String)
+#Delete CMR
+POST    /report/:cmrId/delete           controllers.CMRController.delete(cmrId: Int)
+#Submit CMR
+POST    /report/:cmrId/submit           controllers.CMRController.submit(cmrId: Int)
+
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                   controllers.Assets.versioned(path="/public", file: Asset)

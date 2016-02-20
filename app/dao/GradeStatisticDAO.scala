@@ -17,7 +17,7 @@ class GradeStatisticDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
   import driver.api._
 
   class GradeStatistics(tag: Tag) extends Table[GradeStatistic](tag,"GradeStatistic"){
-    def cmrId = column[Int]("CMRId",O.PrimaryKey)
+    def cmrId = column[Int]("CMRId",O.PrimaryKey,O.AutoInc)
     def statisticType = column[String]("StatisticType",O.PrimaryKey)
     def assessmentMethodId = column[Int]("AssessmentMethodId",O.PrimaryKey)
     def value = column[Option[Float]]("Value")

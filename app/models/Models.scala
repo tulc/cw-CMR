@@ -13,7 +13,7 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 }
 
 case class User(userId: Int, firstName: String, lastName: String,
-                email: String, password: String, createDate: Date, isActive: Char)
+                email: String, password: String, createDate: Date, isActive: Char, roleId: Int)
 
 case class Role(roleId: Int, shortName: String, name: String, description: String, isActive: Char)
 

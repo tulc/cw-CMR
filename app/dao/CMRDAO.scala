@@ -54,4 +54,7 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
 
   def findMaxId(courseId:String,userCreateId: Int) : Future[Int] = db.run(
     cmrs.filter(_.courseId===courseId).filter(_.userCreateId===userCreateId).result).map(x => x.head.cmrId)
+
+  def updateStatusCMR(id: Int, status:String) : Future[Int] =
+    db.run(cmrs.filter(_.cmrId === id).map(cmr => cmr.status).update(status))
 }

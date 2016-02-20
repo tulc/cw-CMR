@@ -17,7 +17,7 @@ class GradeDistributionDAO @Inject()(protected val dbConfigProvider:DatabaseConf
   import driver.api._
 
   class GradeDistributions(tag: Tag) extends Table[GradeDistribution](tag,"GradeDistribution"){
-    def cmrId = column[Int]("CMRId",O.PrimaryKey)
+    def cmrId = column[Int]("CMRId",O.PrimaryKey, O.AutoInc)
     def assessmentMethodId = column[Int]("AssessmentMethodId",O.PrimaryKey)
     def distributionType = column[String]("DistributionType",O.PrimaryKey)
     def value = column[Option[Int]]("Value")

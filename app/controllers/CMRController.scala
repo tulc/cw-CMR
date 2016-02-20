@@ -1,10 +1,12 @@
 package controllers
 
+import java.util.Date
 import javax.inject.Inject
 
 import dao._
 import play.api.mvc.{Action, Controller}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import util.EmailUtil
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -13,11 +15,12 @@ import scala.concurrent.duration._
 /**
   * Created by chinhnk on 2/19/16.
   */
-class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, userDAO: UserDAO,
+class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, userDAO: UserDAO, roleDAO: RoleDAO,
                               gradeStatisticDAO: GradeStatisticDAO, gradeDistributionDAO: GradeDistributionDAO,
-                              assessmentMethodDAO: AssessmentMethodDAO) extends Controller {
+                              assessmentMethodDAO: AssessmentMethodDAO,emailUtil: EmailUtil) extends Controller {
 
-  def getCMRReport(cmrId: Int) = Action.async { implicit request =>
+  def get(cmrId: Int) = Action.async { implicit request =>
+    //Get user role in session
     val cmrPage = for {
       cmr <- cmrDAO.findCMRById(cmrId)
       course <- courseDAO.findById(cmr.head.courseId)
@@ -31,7 +34,8 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, userDAO: Use
     )
   }
 
-  def addCMRReport(courseId: String) = Action.async { implicit request =>
+  def add(courseId: String) = Action.async { implicit request =>
+    //Get use in session
     val checkExist = for {
       course <- courseDAO.findById(courseId)
       cmr <- cmrDAO.findCMRByCourseId(courseId)
@@ -49,13 +53,30 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, userDAO: Use
     }
   }
 
-  def removeCMRReport(cmrId: Int) = Action.async { implicit request =>
-    cmrDAO.removeCMRById(cmrId).map(rowRemove =>
-      Ok(rowRemove.toString)
+  def delete(cmrId: Int) = Action.async { implicit request =>
+    cmrDAO.removeCMRById(cmrId).map(rowRemoved =>
+      Ok(rowRemoved.toString)
     )
   }
-  //TODO: complete submitCMR -> chage status -> submited -> sendEmail
-  def submitCMR = Action.async { implicit request =>
+
+  //TODO: CL submitCMR to CL
+  def submit(cmrId: Int) = Action.async { implicit request =>
+    //Get user role in session if user role is CL -> Submitted
+    val process = for{
+      rowUpdated <- cmrDAO.updateStatusCMR(cmrId,"Submitted")
+      cmr <- cmrDAO.findCMRById(cmrId)
+      course <- courseDAO.findById(cmr.head.courseId)
+      userCM <- userDAO.findUserById(course.head.cmId)
+      email <- emailUtil.sendEmail(s"""Notification about Course no.${course.head.courseId} - ${course.head.title} has been submitted""",userCM.head,cmrId)
+    } yield (rowUpdated)
+    process.map(rowUpdated =>
+      Ok(rowUpdated.toString)
+    )
+  }
+
+  //TODO: Get all reports by role who can view
+  def getCMRReports = Action.async { implicit request =>
+    //Get use in session
     ???
   }
 }

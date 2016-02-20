@@ -13,7 +13,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 class CourseController @Inject()(courseDAO: CourseDAO, userDAO: UserDAO, val messagesApi: MessagesApi) extends Controller with I18nSupport{
 
   def getCourses = Action.async { implicit request =>
-    courseDAO.findByCLId(10).zip(userDAO.findUserById(10)).map { case (courses, user) =>
+    //Get use in session
+    //sua lai doan code nay
+    courseDAO.findByCLId(4).zip(userDAO.findUserById(4)).map { case (courses, user) =>
       Ok(views.html.courses(courses, user))
     }
   }
