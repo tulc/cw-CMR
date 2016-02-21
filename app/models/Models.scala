@@ -2,6 +2,7 @@ package models
 
 import java.sql.Date
 
+import dao.RoleDAO
 import play.api.libs.json.Json
 
 /**
@@ -32,7 +33,24 @@ case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionTy
 
 case class AssessmentMethod(assessmentMethodId: Int, priority: Int, name: String, description: String, isActive: Char)
 
+object Role {
 
-//object User {implicit val userFormat = Json.format[User]}
+  sealed trait Role
 
-//object Course{implicit val courseFormat = Json.format[Course]}
+  case object Administrator extends Role
+  case object PVC extends Role
+  case object DLT extends Role
+  case object CM extends Role
+  case object CL extends Role
+  case object Guest extends Role
+
+  def valueOf(id: Int): Role = id match {
+    case 1 => Administrator
+    case 2 => PVC
+    case 3 => DLT
+    case 4 => CM
+    case 5 => CL
+    case 6 => Guest
+    case _ => throw new IllegalArgumentException()
+  }
+}

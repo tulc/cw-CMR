@@ -35,14 +35,16 @@
                         <form method="post" class="form-login" action="@routes.Application.authenticate">
                             @inputText(loginForm("email"))
                             @inputPassword(loginForm("password"))
-                            @if(loginForm.hasGlobalErrors) {
+                            @if(loginForm.hasErrors) {
                                 <ul>
-                                @for(error <- loginForm.globalErrors) {
-                                    <li class="text-danger">@error.message</li>
+                                @for(error <- loginForm.errors) {
+                                    @if(error.key == "email"){<li class="text-danger">Please check email is invalid</li>}
+                                    @if(error.key == "password"){<li class="text-danger">Password is required</li>}
+                                    @if(error.key != "email" && error.key != "password"){<li class="text-danger">@error.message</li>}
                                 }
                                 </ul>
                             }
-                            <input type="submit" class="btn btn-primary" value="Sign in !">
+                            <input type="submit" class="btn btn-primary form-control" value="Sign in !">
                         </form>
                     </div>
                 </div>

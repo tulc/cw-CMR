@@ -88,8 +88,8 @@ CREATE TABLE Score (--Example table score of student
 INSERT INTO [Role] VALUES ('ADM', 'Administrator', 'Maintain the data of courses, staff, roles', 1);
 INSERT INTO [Role] VALUES ('PVC', 'Pro-Vice Chancellor', 'PVC of faculty', 1);
 INSERT INTO [Role] VALUES ('DLT', 'Director of Learning and Quality', 'DLT of faculty', 1);
-INSERT INTO [Role] VALUES ('CL', 'Course Leader', 'CL of course', 1);
 INSERT INTO [Role] VALUES ('CM', 'Course Moderator', 'CM of course', 1);
+INSERT INTO [Role] VALUES ('CL', 'Course Leader', 'CL of course', 1);
 INSERT INTO [Role] VALUES ('GUEST', 'Guest', 'Guest account for each faculty', 1);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
@@ -102,8 +102,8 @@ INSERT INTO AssessmentMethod VALUES (5, 'OVERALL', 'Overall', DEFAULT);
 INSERT INTO [User] VALUES ('Administrator', 'Administrator', 'cmr@gmail.com', '123', DEFAULT, 1, 1); --admin
 INSERT INTO [User] VALUES ('ChinhPVC', 'Nguyen', 'chinhnkgt00494@fpt.edu.vn', '123', DEFAULT, 1, 2); --chinh PVC
 INSERT INTO [User] VALUES ('ChinhDLT', 'Nguyen', 'chinhngk@gmail.com', '123', DEFAULT, 1, 3); --chinh DLT
-INSERT INTO [User] VALUES ('ChinhCL', 'Nguyen', 'nguyenkienchinh91@gmail.com', '123', DEFAULT, 1, 4); -- chinh CL
-INSERT INTO [User] VALUES ('Tu', 'Luu', 'tulcgc00706@fpt.edu.vn', '123', DEFAULT, 1, 5); --tu CM
+INSERT INTO [User] VALUES ('Tu', 'Luu', 'tulcgc00706@fpt.edu.vn', '123', DEFAULT, 1, 4); --tu CM
+INSERT INTO [User] VALUES ('ChinhCL', 'Nguyen', 'nguyenkienchinh91@gmail.com', '123', DEFAULT, 1, 5); -- chinh CL
 INSERT INTO [User] VALUES ('Guest', '', 'guest', '123', DEFAULT, 1, 6); --guest
 
 -- INSERT INTO [User] VALUES ('Hung', 'Vu', 'hungvmgc00672@fpt.edu.vn', '123', DEFAULT, 1);

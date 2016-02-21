@@ -198,9 +198,7 @@ th{
     background: rgba(0, 0, 0, 0.3);
     text-align: left;
 }
-.form-login .btn{
-    width: 100%;
-}
+
 .form-login input{
     height: 50px;
     padding: 0 20px;
