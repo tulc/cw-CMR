@@ -10,7 +10,7 @@ GET     /logout                         controllers.Application.logout
 GET     /                               controllers.Application.index
 
 ###Courses page
-GET     /courses                        controllers.CourseController.getCourses
+GET     /courses                        controllers.CourseController.list
 
 ###CMR
 #Get CMR
@@ -21,7 +21,8 @@ POST    /report/add                     controllers.CMRController.add(courseId: 
 POST    /report/:cmrId/delete           controllers.CMRController.delete(cmrId: Int)
 #Submit CMR
 POST    /report/:cmrId/submit           controllers.CMRController.submit(cmrId: Int)
-
+#List CMR
+GET     /reports                        controllers.CMRController.list
 
 
 # Map static resources from the /public folder to the /assets URL path

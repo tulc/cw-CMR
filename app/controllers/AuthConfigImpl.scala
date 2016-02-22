@@ -19,7 +19,7 @@ trait AuthConfigImpl extends AuthConfig {
 
   type Id = Int
   type User = models.User
-  type Authority = Role
+  type Authority = User => Future[Boolean]
 
   val idTag: ClassTag[Id] = classTag[Id]
   val sessionTimeoutInSeconds: Int = 3600
@@ -39,8 +39,8 @@ trait AuthConfigImpl extends AuthConfig {
     Future.successful(Forbidden("No permission"))
   }
 
-  def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = Future.successful{
-    (user.roleId, authority) match {
+  def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = authority(user)
+    /*(user.roleId, authority) match {
       case (1, _) => true
       case (2, PVC) => true
       case (3, DLT) => true
@@ -48,6 +48,6 @@ trait AuthConfigImpl extends AuthConfig {
       case (5, CL) => true
       case (6, Guest) => true
       case _ => false
-    }
-  }
+    }*/
+//  }
 }

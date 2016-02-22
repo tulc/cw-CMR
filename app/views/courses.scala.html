@@ -1,4 +1,4 @@
-@(courseList: Seq[(Course, Faculty, User)], user: Option[User])(implicit flash: play.api.mvc.Flash, messages: Messages)
+@(data: Seq[(Course, Option[Faculty], Option[User], Option[User])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
     @main("Course Monitoring Reports", "Courses") {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -30,33 +30,37 @@
                 <thead>
                     <tr>
                         <th class="header">Course</th>
-                        <th class="header">Faculty</th>
                         <th class="header">Title</th>
+                        <th class="header">Faculty</th>
                         <th class="header">Session</th>
                         <th class="header">Student</th>
                         <th class="header">Start</th>
                         <th class="header">End</th>
                         <th class="header">CM</th>
                         <th class="header">CL</th>
-                        <th class="header">#</th>
+                        @if(user.roleId == "CL") {
+                            <th class="header">#</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
-                @for(c <- courseList) {
+                @for(c <- data) {
                     <tr>
                         <td>@c._1.courseId</td>
-                        <td>@c._2.name</td>
                         <td>@c._1.title</td>
+                        <td>@c._2.head.name</td>
                         <td>@c._1.academicSession</td>
                         <td>@c._1.studentNumber</td>
                         <td>@c._1.startDate</td>
                         <td>@c._1.endDate</td>
-                        <td>@c._3.firstName @c._3.lastName</td>
-                        <td>@user.head.firstName @user.head.lastName</td>
+                        <td>@c._3.head.firstName @c._3.head.lastName</td>
+                        <td>@c._4.head.firstName @c._4.head.lastName</td>
                         <td>
-                            <form action="@routes.CMRController.add(c._1.courseId)">
-                                <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
-                            </form>
+                            @if(user.roleId == "CL") {
+                                <form action="@routes.CMRController.add(c._1.courseId)">
+                                    <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

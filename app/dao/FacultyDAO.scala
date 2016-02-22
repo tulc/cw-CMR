@@ -31,4 +31,6 @@ class FacultyDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider
   import driver.api._
 
   private lazy val faculties = TableQuery[Faculties]
+
+  def findById(id: Int): Future[Option[Faculty]] = db.run(faculties.filter(_.facultyId === id).result.headOption)
 }

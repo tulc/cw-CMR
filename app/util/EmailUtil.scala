@@ -1,7 +1,8 @@
 package util
 
-import javax.inject.Inject
+import javax.inject.{Singleton, Inject}
 
+import dao.{UserDAO, CourseDAO, FacultyDAO, CMRDAO}
 import models.User
 import play.api.libs.mailer.{Email, MailerClient}
 
@@ -11,23 +12,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by chinhnk on 2/10/16.
   */
-
-class EmailUtil @Inject()(mailerClient: MailerClient) {
-  def sendEmail(subject: String, userReciver: User, cmrId:Int): Future[String] = {
+@Singleton
+class EmailUtil @Inject()(mailerClient: MailerClient, cmrDAO: CMRDAO, courseDAO: CourseDAO,
+                          facultyDAO: FacultyDAO, userDAO: UserDAO) {
+  def send(email: Email): Future[String] = {
     Future{
-      val email = Email(
-        subject,
-        "Course Monitoring Report Center<info@coursemonitoringreport.com>",
-        Seq("nguyenkienchinh91@gmail.com"),
-        bodyText = Some(
-          s"""CMR center inform that have a new submitted report.
-             |
-             |
-             |Open in CMR to view detail:
-             |http://localhost:9000/report/${cmrId}
-             |""".stripMargin)
-      )
       mailerClient.send(email)
     }
+  }
+
+  def buildEmail(cmrId: Int, status: String, title: String,
+                 courseId: String, faculty: String, toEmail: Seq[String], userName: String): Email = {
+    val subject = s"""CMR Center notify: CMR no.${cmrId} has been ${status}"""
+    val from = "Course Monitoring Report Center<info@coursemonitoringreport.com>"
+    val text = Some(
+      s"""CMR center inform that:
+          |Course ${title} - ${courseId} of ${faculty} have been ${status} by ${userName}.
+          |
+          |* The CMR must be commented on within 14 days.
+          |Please check more detail in:
+          |http://localhost:9000/report/${cmrId}
+          |""".stripMargin)
+    return Email(subject, from, toEmail, text)
   }
 }

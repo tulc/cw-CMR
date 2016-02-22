@@ -8,7 +8,7 @@ AS
     @cmrId INT;
     -- insert CMR and get id
     INSERT INTO CMR
-    VALUES ('Created', DEFAULT, @userId, @courseId, NULL, NULL, NULL, NULL, NULL);
+    VALUES ('Created', @userId, @courseId, DEFAULT,NULL , NULL, NULL, NULL, NULL, NULL);
     SET @cmrId = (SELECT cmrId
                   FROM CMR
                   WHERE cmrId = SCOPE_IDENTITY());

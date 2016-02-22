@@ -1,8 +1,7 @@
 # --- !Ups
 
 CREATE TABLE [Role] (
-  RoleId      INT PRIMARY KEY IDENTITY (1, 1),
-  ShortName   VARCHAR(50) NOT NULL UNIQUE,
+  RoleId      VARCHAR(50) PRIMARY KEY,
   Name        VARCHAR(50) NOT NULL UNIQUE,
   Description VARCHAR(255),
   IsActive    BIT             DEFAULT 1
@@ -16,7 +15,7 @@ CREATE TABLE [User] (
   [Password] VARCHAR(255) NOT NULL DEFAULT ('123'),
   CreateDate DATETIME              DEFAULT GETDATE(),
   IsActive   BIT                   DEFAULT 1,
-  RoleId      INT FOREIGN KEY REFERENCES [Role](RoleId)
+  RoleId     VARCHAR(50) FOREIGN KEY REFERENCES [Role](RoleId)
 );
 
 CREATE TABLE Faculty (
@@ -43,9 +42,10 @@ CREATE TABLE Course (
 CREATE TABLE CMR (
   CMRId           INT PRIMARY KEY IDENTITY (1, 1),
   Status          VARCHAR(20) NOT NULL, --REPORT STATUS (CREATED, SUBMITTED, APPROVED, COMMENTED, EXPIRED)
-  CreateDate      DATETIME        DEFAULT GETDATE(),
   UserCreateId    INT FOREIGN KEY REFERENCES [User] (UserId),
   CourseId        VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId),
+  CreatedDate     DATETIME DEFAULT GETDATE(),
+  SubmittedDate   DATETIME,
   UserApprovedId  INT,
   ApprovedDate    DATETIME,
   Comment         VARCHAR(255),
@@ -99,12 +99,12 @@ INSERT INTO AssessmentMethod VALUES (3, 'CW4', 'Coursework 4', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (4, 'EXAM', 'Exam', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (5, 'OVERALL', 'Overall', DEFAULT);
 
-INSERT INTO [User] VALUES ('Administrator', 'Administrator', 'cmr@gmail.com', '123', DEFAULT, 1, 1); --admin
-INSERT INTO [User] VALUES ('ChinhPVC', 'Nguyen', 'chinhnkgt00494@fpt.edu.vn', '123', DEFAULT, 1, 2); --chinh PVC
-INSERT INTO [User] VALUES ('ChinhDLT', 'Nguyen', 'chinhngk@gmail.com', '123', DEFAULT, 1, 3); --chinh DLT
-INSERT INTO [User] VALUES ('Tu', 'Luu', 'tulcgc00706@fpt.edu.vn', '123', DEFAULT, 1, 4); --tu CM
-INSERT INTO [User] VALUES ('ChinhCL', 'Nguyen', 'nguyenkienchinh91@gmail.com', '123', DEFAULT, 1, 5); -- chinh CL
-INSERT INTO [User] VALUES ('Guest', '', 'guest', '123', DEFAULT, 1, 6); --guest
+INSERT INTO [User] VALUES ('Administrator', 'Administrator', 'cmr@gmail.com', '123', DEFAULT, 1, 'ADM'); --admin
+INSERT INTO [User] VALUES ('ChinhPVC', 'Nguyen', 'chinhnkgt00494@fpt.edu.vn', '123', DEFAULT, 1, 'PVC'); --chinh PVC
+INSERT INTO [User] VALUES ('ChinhDLT', 'Nguyen', 'chinhngk@gmail.com', '123', DEFAULT, 1, 'DLT'); --chinh DLT
+INSERT INTO [User] VALUES ('Tu', 'Luu', 'tulcgc00706@fpt.edu.vn', '123', DEFAULT, 1, 'CM'); --tu CM
+INSERT INTO [User] VALUES ('ChinhCL', 'Nguyen', 'nguyenkienchinh91@gmail.com', '123', DEFAULT, 1,'CL'); -- chinh CL
+INSERT INTO [User] VALUES ('Guest', '', 'guest', '123', DEFAULT, 1, 'GUEST'); --guest
 
 -- INSERT INTO [User] VALUES ('Hung', 'Vu', 'hungvmgc00672@fpt.edu.vn', '123', DEFAULT, 1);
 -- INSERT INTO [User] VALUES ('Sani', 'Maina', 'mainagt00402@fpt.edu.vn', '123', DEFAULT, 1);
@@ -114,8 +114,8 @@ INSERT INTO [User] VALUES ('Guest', '', 'guest', '123', DEFAULT, 1, 6); --guest
 
 INSERT INTO Faculty VALUES ('Computer Science', 2, 3, 1);
 
-INSERT INTO Course VALUES ('C00001','Software Engineering', 'Spring', 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 4, 5);
-INSERT INTO Course VALUES ('C00002','Database Analyst' ,'Spring', 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 4, 5);
+INSERT INTO Course VALUES ('C00001','Software Engineering', 'Spring', 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 5, 4);
+INSERT INTO Course VALUES ('C00002','Database Analyst' ,'Spring', 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 5, 4);
 
 -- 5 student 5 cw1
 INSERT INTO Score VALUES (20, 1, 'C00001');

@@ -50,13 +50,38 @@ class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   private lazy val faculties = TableQuery[Faculties]
   private lazy val users = TableQuery[Users]
 
-  def findByCLId(id: Int): Future[Seq[(Course,Faculty,User)]] = {
-    val query = (for (course <- courses if course.clId === id;
-      faculty <- faculties if faculty.facultyId === course.facultyId;
-      courseModerator <- users if courseModerator.userId === course.cmId
-    ) yield (course,faculty,courseModerator))
-    db.run(query.sortBy(_._1.endDate.desc).result)
-  }
-
   def findById(id:String): Future[Option[Course]] = db.run(courses.filter(_.courseId === id).result.headOption)
+
+  def findByUserRole(roleId: String, userId: Int): Future[Seq[(Course,Option[Faculty],Option[User],Option[User])]] = {
+    val clQuery = for {
+      (((course,faculty),userCM), userCL) <- courses.filter(_.clId === userId)
+        .joinLeft(faculties).on(_.facultyId === _.facultyId)
+        .joinLeft(users).on(_._1.cmId === _.userId)
+        .joinLeft(users).on(_._1._1.clId === _.userId)
+    } yield (course,faculty, userCM, userCL)
+    val cmQuery = for {
+      (((course,faculty),userCM), userCL) <- courses.filter(_.cmId === userId).sortBy(_.endDate.desc)
+        .joinLeft(faculties).on(_.facultyId === _.facultyId)
+        .joinLeft(users).on(_._1.cmId === _.userId)
+        .joinLeft(users).on(_._1._1.clId === _.userId)
+    } yield (course,faculty, userCM, userCL)
+    val dltQuery = for {
+      (((course,faculty),userCM), userCL) <- courses
+        .joinLeft(faculties.filter(_.dltId === userId)).on(_.facultyId === _.facultyId)
+        .joinLeft(users).on(_._1.cmId === _.userId)
+        .joinLeft(users).on(_._1._1.clId === _.userId)
+    } yield (course,faculty, userCM, userCL)
+    val pvcQuery = for {
+      (((course,faculty),userCM), userCL) <- courses
+        .joinLeft(faculties.filter(_.pvcId === userId)).on(_.facultyId === _.facultyId)
+        .joinLeft(users).on(_._1.cmId === _.userId)
+        .joinLeft(users).on(_._1._1.clId === _.userId)
+    } yield (course,faculty, userCM, userCL)
+    roleId match {
+      case ("CL") => db.run(clQuery.sortBy(_._1.endDate.desc).result)
+      case ("CM") => db.run(cmQuery.sortBy(_._1.endDate.desc).result)
+      case ("DLT") => db.run(dltQuery.sortBy(_._1.endDate.desc).result)
+      case ("PVC") => db.run(pvcQuery.sortBy(_._1.endDate.desc).result)
+    }
+  }
 }

@@ -2,21 +2,27 @@ package controllers
 
 import javax.inject.Inject
 
-import dao.{UserDAO, CourseDAO}
+import dao.{FacultyDAO, RoleDAO, UserDAO, CourseDAO}
+import jp.t2v.lab.play2.auth.AuthElement
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+import scala.concurrent.Future
 
 /**
   * Created by chinhnk on 2/19/16.
   */
-class CourseController @Inject()(courseDAO: CourseDAO, userDAO: UserDAO, val messagesApi: MessagesApi) extends Controller with I18nSupport{
+class CourseController @Inject()(courseDAO: CourseDAO, val userDAO: UserDAO, roleDAO: RoleDAO, facultyDAO: FacultyDAO,
+                                 val messagesApi: MessagesApi) extends Controller with I18nSupport with AuthConfigImpl with AuthElement{
 
-  def getCourses = Action.async { implicit request =>
-    //Get use in session
-    //sua lai doan code nay
-    courseDAO.findByCLId(4).zip(userDAO.findUserById(4)).map { case (courses, user) =>
-      Ok(views.html.courses(courses, user))
+  //authority all user have role active
+  private def authorityList()(user: User) : Future[Boolean] = roleDAO.findById(user.roleId).map(x => x.nonEmpty) //TODO: Except GUEST
+
+  def list = AsyncStack(AuthorityKey -> authorityList()) { implicit request =>
+    val userLogin = loggedIn
+    courseDAO.findByUserRole(userLogin.roleId,userLogin.userId).map { courses =>
+      Ok(views.html.courses(courses, userLogin))
     }
   }
 }

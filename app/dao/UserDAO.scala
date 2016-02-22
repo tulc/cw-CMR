@@ -25,7 +25,7 @@ trait UsersComponent{ self: HasDatabaseConfigProvider[JdbcProfile] =>
     def password = column[String]("Password")
     def createDate = column[Date]("CreateDate")
     def isActive = column[Char]("isActive")
-    def roleId = column[Int]("RoleId")
+    def roleId = column[String]("RoleId")
 
     def * = (userId,firstName,lastName,email,password,createDate,isActive,roleId) <> ((User.apply _).tupled, User.unapply _)
   }
@@ -43,5 +43,4 @@ class UserDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider) e
   def authenticate(email:String, password:String) : Option[User] =
     Await.result(db.run(users.filter(_.email === email).filter(_.password === password).result.headOption),Duration(2, SECONDS))
 
-//  def findAllUserByPlainSQL : Future[Seq[String]] = db.run(sql"SELECT userId FROM [User]".as[String])
 }
