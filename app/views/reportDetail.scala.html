@@ -1,5 +1,5 @@
 @(data: (Seq[CMR], Option[Course], Option[User], Seq[GradeStatistic], Seq[GradeDistribution], Seq[AssessmentMethod]), user: User)
-    @main("Course Monitoring Reports", "Course Monitoring Report no." + data._1.head.cmrId) {
+    @main("Course Monitoring Reports", "Course Monitoring Report no." + data._1.head.cmrId, user) {
         <script src="@routes.Assets.versioned("js/reportDetail.js")" type="text/javascript"></script>
         <table class="table table-bordered">
             <thead>

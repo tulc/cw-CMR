@@ -1,5 +1,5 @@
-@(data: Seq[(CMR, Option[Course], Option[Faculty], Option[User], Option[User])])
-@main("Course Monitoring Reports", "Reportes") {
+@(data: Seq[(CMR, Option[Course], Option[Faculty], Option[User], Option[User])], user: User)
+@main("Course Monitoring Reports", "Reportes", user) {
     <div class="row div-table-search">
         <div class="col-sm-12 col-md-12 col-lg-12">
             <div class="table-text-search">

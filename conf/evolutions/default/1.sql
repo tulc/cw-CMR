@@ -25,11 +25,11 @@ CREATE TABLE Faculty (
   DLTId     INT FOREIGN KEY REFERENCES [User] (UserId),
   IsActive  BIT             DEFAULT 1
 );
-
+--TODO: Need to put CL + CM out of course
 CREATE TABLE Course (
   CourseId        VARCHAR(10) PRIMARY KEY,
   Title           VARCHAR(50) NOT NULL ,
-  AcademicSession VARCHAR(50) NOT NULL,
+  AcademicSession VARCHAR(50) NOT NULL, --TODO: Can be 2016, 2015,..
   StudentNumber   INT         NOT NULL,
   CreateDate      DATE DEFAULT GETDATE(),
   StartDate       DATE        NOT NULL,

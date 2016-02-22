@@ -1,5 +1,5 @@
 @(data: Seq[(Course, Option[Faculty], Option[User], Option[User])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
-    @main("Course Monitoring Reports", "Courses") {
+    @main("Course Monitoring Reports", "Courses", user) {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
                 <strong>Done!</strong> @message

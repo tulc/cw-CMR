@@ -10,15 +10,16 @@ import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, Controller}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 
 class Application @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messagesApi: MessagesApi) extends Controller
   with LoginLogout with AuthConfigImpl with I18nSupport with AuthElement {
 
-  //authority all user have role active
+  //TODO: Insert into database ->
   private def authorityIndex()(user: User) : Future[Boolean] = roleDAO.findById(user.roleId).map(x => x.nonEmpty)
 
+  //TODO: Password need to be encrypt
   val loginForm = Form (
     mapping("email" -> email, "password" -> nonEmptyText
     )(userDAO.authenticate)(_.map(u => (u.email,"")))
@@ -33,7 +34,8 @@ class Application @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messages
   }
 
   def index = StackAction(AuthorityKey -> authorityIndex()) { implicit request =>
-    Ok(views.html.index("Ok"))
+    val userLogin = loggedIn
+    Ok(views.html.index(userLogin))
   }
 
   def login = Action { implicit request =>
