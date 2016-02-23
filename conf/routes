@@ -14,15 +14,15 @@ GET     /courses                        controllers.CourseController.list
 
 ###CMR
 #Get CMR
-GET     /report/:cmrId                  controllers.CMRController.get(cmrId: Int)
+GET     /cmr-report/:cmrId              controllers.CMRController.get(cmrId: Int)
 #Add CMR
-POST    /report/add                     controllers.CMRController.add(courseId: String)
+POST    /cmr-report/add                 controllers.CMRController.add(courseId: String)
 #Delete CMR
-POST    /report/:cmrId/delete           controllers.CMRController.delete(cmrId: Int)
+POST    /cmr-report/:cmrId/delete       controllers.CMRController.delete(cmrId: Int)
 #Submit CMR
-POST    /report/:cmrId/submit           controllers.CMRController.submit(cmrId: Int)
+POST    /cmr-report/:cmrId/submit       controllers.CMRController.submit(cmrId: Int)
 #List CMR
-GET     /reports                        controllers.CMRController.list
+GET     /cmr-reports                    controllers.CMRController.list
 
 
 # Map static resources from the /public folder to the /assets URL path

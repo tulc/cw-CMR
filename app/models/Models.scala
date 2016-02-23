@@ -29,3 +29,6 @@ case class GradeStatistic(cmrId: Int, statisticType: String, assessmentMethodId:
 case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionType: String, value: Option[Int])
 
 case class AssessmentMethod(assessmentMethodId: Int, priority: Int, name: String, description: String, isActive: Char)
+
+case class Permission(permissionId: Int, name: String, path: String)
+case class RolePermission(roleId: String, permissionId: Int)

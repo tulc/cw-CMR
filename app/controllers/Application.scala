@@ -7,7 +7,7 @@ import jp.t2v.lab.play2.auth.{AuthElement, LoginLogout}
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{MessagesApi, I18nSupport}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
@@ -16,12 +16,8 @@ import scala.concurrent.Future
 class Application @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messagesApi: MessagesApi) extends Controller
   with LoginLogout with AuthConfigImpl with I18nSupport with AuthElement {
 
-  //TODO: Insert into database ->
-  private def authorityIndex()(user: User) : Future[Boolean] = roleDAO.findById(user.roleId).map(x => x.nonEmpty)
-
-  //TODO: Password need to be encrypt
   val loginForm = Form (
-    mapping("email" -> email, "password" -> nonEmptyText
+    mapping("email" -> nonEmptyText, "password" -> nonEmptyText
     )(userDAO.authenticate)(_.map(u => (u.email,"")))
       .verifying("The email and password you entered don't match. Please try again", result => result.isDefined)
   )
@@ -33,8 +29,9 @@ class Application @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messages
     )
   }
 
-  def index = StackAction(AuthorityKey -> authorityIndex()) { implicit request =>
+  def index = StackAction(AuthorityKey -> roleDAO.authority("index")) { implicit request =>
     val userLogin = loggedIn
+    println(routes.CMRController.get(1).toString)
     Ok(views.html.index(userLogin))
   }
 

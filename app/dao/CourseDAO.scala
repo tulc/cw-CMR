@@ -14,7 +14,7 @@ import scala.concurrent.Future
   * Created by chinhnk on 2/12/16.
   */
 
-trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] with FacultiesComponent with UsersComponent =>
+trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
   import driver.api._
 
   class Courses(tag: Tag) extends Table[Course](tag, "Course") {
@@ -30,15 +30,7 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] with Facul
     def cmId = column[Int]("CMId")
 
     def * = (courseId,title , academicSession, studentNumber, createDate, startDate, endDate, facultyId, clId, cmId) <>((Course.apply _).tupled, Course.unapply _)
-
-    def faculty = foreignKey("Faculty", facultyId, faculties)(_.facultyId)
-    def userCL = foreignKey("User", clId, users)(_.userId)
-    def userCM = foreignKey("User", cmId, users)(_.userId)
   }
-
-  private lazy val faculties = TableQuery[Faculties]
-  private lazy val users = TableQuery[Users]
-
 }
 
 @Singleton

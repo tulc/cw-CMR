@@ -13,7 +13,7 @@ import scala.concurrent.Future
   */
 @Singleton
 class GradeDistributionDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider)
-  extends HasDatabaseConfigProvider[JdbcProfile] with AssessmentMethodComponent{
+  extends HasDatabaseConfigProvider[JdbcProfile] {
   import driver.api._
 
   class GradeDistributions(tag: Tag) extends Table[GradeDistribution](tag,"GradeDistribution"){
@@ -23,15 +23,10 @@ class GradeDistributionDAO @Inject()(protected val dbConfigProvider:DatabaseConf
     def value = column[Option[Int]]("Value")
 
     def * = (cmrId,assessmentMethodId,distributionType,value) <> ((GradeDistribution.apply _).tupled, GradeDistribution.unapply _)
-
-    def assessmentMethod = foreignKey("AssessmentMethodId",assessmentMethodId,assessmentMethods)(_.assessmentMethodId)
   }
-
-  private lazy val assessmentMethods = TableQuery[AssessmentMethods]
   private lazy val gradeDistributions = TableQuery[GradeDistributions]
 
   def findByCMRId(cmrId: Int) : Future[Seq[GradeDistribution]] = db.run(
     gradeDistributions.filter(_.cmrId === cmrId).result
   )
-
 }

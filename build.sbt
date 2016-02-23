@@ -21,7 +21,9 @@ libraryDependencies ++= Seq(
   "org.webjars" % "font-awesome" % "4.5.0",
   "org.webjars" % "jquery" % "2.2.0",
 
-  "jp.t2v" %% "play2-auth" % "0.14.1"
+  "jp.t2v" %% "play2-auth" % "0.14.1",
+
+  "de.svenkubiak" % "jBCrypt" % "0.4.1"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

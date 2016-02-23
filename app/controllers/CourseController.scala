@@ -16,10 +16,8 @@ import scala.concurrent.Future
 class CourseController @Inject()(courseDAO: CourseDAO, val userDAO: UserDAO, roleDAO: RoleDAO, facultyDAO: FacultyDAO,
                                  val messagesApi: MessagesApi) extends Controller with I18nSupport with AuthConfigImpl with AuthElement{
 
-  //TODO: Insert into database ->
-  private def authorityList()(user: User) : Future[Boolean] = roleDAO.findById(user.roleId).map(x => x.nonEmpty) //TODO: Except GUEST
   //TODO: Need to search and paging and order by
-  def list = AsyncStack(AuthorityKey -> authorityList()) { implicit request =>
+  def list = AsyncStack(AuthorityKey -> roleDAO.authority("courses.list")) { implicit request =>
     val userLogin = loggedIn
     courseDAO.findByUserRole(userLogin.roleId,userLogin.userId).map { courses =>
       Ok(views.html.courses(courses, userLogin))

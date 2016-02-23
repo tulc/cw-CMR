@@ -35,9 +35,6 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
 
     def * = (cmrId,status,userCreateId,courseId, createdDate,submittedDate,userApprovedId,
       approvedDate,comment,userCommentedId,commentedDate) <> ((CMR.apply _).tupled, CMR.unapply _)
-
-    def course = foreignKey("Course", courseId, courses)(_.courseId)
-    def user = foreignKey("User", userCreateId, users)(_.userId)
   }
 
   private lazy val cmrs = TableQuery[CMRs]

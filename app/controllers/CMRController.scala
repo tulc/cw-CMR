@@ -19,16 +19,8 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
                               gradeStatisticDAO: GradeStatisticDAO, gradeDistributionDAO: GradeDistributionDAO,
                               assessmentMethodDAO: AssessmentMethodDAO, emailUtil: EmailUtil, facultyDAO: FacultyDAO)
   extends Controller with AuthConfigImpl with AuthElement {
-  //TODO: Insert into database ->
-  private def authority(functionName: String)(user: User): Future[Boolean] = {
-    functionName match {
-      case "add" | "delete" => roleDAO.findById(user.roleId).map(r => r.head.roleId == "CL") //only CL can call add function
-      case "get" | "list" => roleDAO.findById(user.roleId).map(r => r.nonEmpty) //TODO: except GUEST and ADMIN
-      case "submit" => roleDAO.findById(user.roleId).map(r => r.head.roleId == "CL" || r.head.roleId == "CM" || r.head.roleId == "DLT")
-    }
-  }
 
-  def get(cmrId: Int) = AsyncStack(AuthorityKey -> authority("get")) { implicit request =>
+  def get(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.get")) { implicit request =>
     val userLogin = loggedIn
     val cmrPage = for {
       cmr <- cmrDAO.findCMRById(cmrId)
@@ -43,7 +35,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     )
   }
 
-  def add(courseId: String) = AsyncStack(AuthorityKey -> authority("add")) { implicit request =>
+  def add(courseId: String) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.add")) { implicit request =>
     val userLogin = loggedIn
     val checkExist = for {
       course <- courseDAO.findById(courseId)
@@ -53,24 +45,24 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
       if (course.isEmpty) {
         Redirect(routes.CourseController.list()).flashing("error" -> "Course Monitoring Report created failed. %s not exist".format(courseId))
       } else if (cmr.nonEmpty) {
-        Redirect(routes.CourseController.list()).flashing("info" -> "Can not create Course Monitoring Report. Because CMR has been created", "link" -> "/report/%s".format(cmr.head.cmrId))
+        Redirect(routes.CourseController.list()).flashing("info" -> "Can not create Course Monitoring Report. Because CMR has been created", "link" -> routes.CMRController.get(cmr.head.cmrId).toString)
       } else {
         Await.result(cmrDAO.insertCMR(courseId, userLogin.userId), Duration(2, SECONDS))
         val cmrId = Await.result(cmrDAO.findMaxId(courseId, userLogin.userId), Duration(2, SECONDS))
-        Redirect(routes.CourseController.list()).flashing("success" -> "Course Monitoring Report has been created", "link" -> "/report/%s".format(cmrId))
+        Redirect(routes.CourseController.list()).flashing("success" -> "Course Monitoring Report has been created", "link" -> routes.CMRController.get(cmrId).toString)
       }
     }
   }
 
-  def delete(cmrId: Int) = AsyncStack(AuthorityKey -> authority("delete")) { implicit request =>
+  def delete(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.delete")) { implicit request =>
     cmrDAO.removeCMRById(cmrId).map(rowRemoved =>
       Ok(rowRemoved.toString)
     )
   }
 
-  def submit(cmrId: Int) = AsyncStack(AuthorityKey -> authority("submit")) { implicit request =>
+  def submit(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.submit")) { implicit request =>
     val userLogin = loggedIn
-    //TODO: Refactor here
+    //TODO: Refactor here solution is : using form
     userLogin.roleId match {
       case "CL" => for {
         cmr <- cmrDAO.findCMRById(cmrId)
@@ -107,7 +99,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     }
   }
 
-  def list = AsyncStack(AuthorityKey -> authority("list")) { implicit request =>
+  def list = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.list")) { implicit request =>
     val userLogin = loggedIn
     cmrDAO.findByUser(userLogin.roleId, userLogin.userId).map(cmrs =>
       Ok(views.html.reportes(cmrs,userLogin))
