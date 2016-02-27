@@ -21,9 +21,9 @@ class EmailUtil @Inject()(mailerClient: MailerClient, cmrDAO: CMRDAO, courseDAO:
     }
   }
 
-  def buildEmail(cmrId: Int, status: String, title: String,
+  def buildEmailNotifyNewAction(cmrId: Int, status: String, title: String,
                  courseId: String, faculty: String, toEmail: Seq[String], userName: String): Email = {
-    val subject = s"""CMR Center notify: CMR no.${cmrId} has been ${status}"""
+    val subject = s"""CMR Center notification: CMR no.${cmrId} has been ${status}"""
     val from = "Course Monitoring Report Center<info@coursemonitoringreport.com>"
     val text = Some(
       s"""CMR center inform that:
@@ -33,6 +33,7 @@ class EmailUtil @Inject()(mailerClient: MailerClient, cmrDAO: CMRDAO, courseDAO:
           |Please check more detail in:
           |http://localhost:9000/report/${cmrId}
           |""".stripMargin)
-    return Email(subject, from, toEmail, text)
+    Email(subject, from, toEmail, text)
   }
+
 }

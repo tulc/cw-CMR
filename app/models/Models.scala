@@ -17,7 +17,7 @@ case class Role(roleId: String, name: String, description: String, isActive: Cha
 
 case class Faculty(facultyId: Int, name: String, pvcId: Int, dltId: Int, isActive: Char)
 
-case class Course(courseId: String, title: String, academicSession: String, studentNumber: Int,
+case class Course(courseId: String, title: String, academicYear: Int, studentNumber: Int,
                   createDate: Date, startDate: Date, endDate: Date, facultyId: Int, clId: Int, cmId: Int)
 
 case class CMR(cmrId: Int, status: String, userCreateId: Int, courseId: String, createdDate: Date, submittedDate: Option[Date],

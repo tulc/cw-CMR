@@ -49,10 +49,13 @@
                                 <li role="presentation"><a href="@routes.CourseController.list"><span class="fa fa-book"></span>
                                     Courses</a>
                                 </li>
-                                <li role="presentation"><a href="@routes.CMRController.list"><span class="fa fa-pencil-square-o"></span>
-                                    Course Report</a>
-                                </li>
-                                <li role="presentation"><a href="#">Some function</a></li>
+                                @if(user.roleId != "ADM" && user.roleId != "GUEST") {
+                                    <li role="presentation"><a href="@routes.CMRController.list"><span class="fa fa-pencil-square-o"></span>
+                                        Course Report</a>
+                                    </li>
+                                }
+                                <li role="presentation"><a href="#"><span class="fa fa-university"></span> Faculties</a></li>
+                                <li role="presentation"><a href="#"><span class="fa fa-users"></span> Users</a></li>
                                 <li><hr/></li>
                                 <li role="presentation"><a href="#"><span class="fa fa-user"></span> Profile</a></li>
                                 <li role="presentation"><a href="@routes.Application.logout"><span class="fa fa-sign-out"></span> Sign Out</a></li>

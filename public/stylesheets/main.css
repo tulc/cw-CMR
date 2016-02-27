@@ -210,3 +210,22 @@ th{
     background-color: #434857;
     border:none;
 }
+
+.my-drop-picker{
+    background-color: #cfd2da;
+    color: black;
+    border: 1px solid #cfd2da;
+    transition: all .3s;
+}
+.my-drop-picker:hover{
+    background-color: #FAFAFA;
+}
+.dropdown-menu.open{
+    background-color: #cfd2da;
+}
+.dropdown-menu.inner{
+    background-color: #cfd2da;
+}
+.datepicker{
+    color: #333;
+}

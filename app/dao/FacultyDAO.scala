@@ -2,7 +2,7 @@ package dao
 
 import javax.inject.{Singleton, Inject}
 
-import models.{Course, Faculty}
+import models.Faculty
 import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
@@ -33,4 +33,5 @@ class FacultyDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider
   private lazy val faculties = TableQuery[Faculties]
 
   def findById(id: Int): Future[Option[Faculty]] = db.run(faculties.filter(_.facultyId === id).result.headOption)
+  def findAll : Future[Seq[Faculty]] = db.run(faculties.result)
 }

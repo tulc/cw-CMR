@@ -7,15 +7,15 @@ CREATE TABLE [Role] (
   IsActive    BIT DEFAULT 1
 );
 
-CREATE TABLE Permission(
-  PermissionId INT PRIMARY KEY IDENTITY (1,1),
-  Name VARCHAR(50) NOT NULL,
-  Path VARCHAR(50) NOT NULL
+CREATE TABLE Permission (
+  PermissionId INT PRIMARY KEY IDENTITY (1, 1),
+  Name         VARCHAR(50) NOT NULL,
+  Path         VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Role_Permission(
-  RoleId VARCHAR(50) FOREIGN KEY REFERENCES [Role](RoleId),
-  PermissionId INT FOREIGN KEY REFERENCES Permission(PermissionId)
+CREATE TABLE Role_Permission (
+  RoleId       VARCHAR(50) FOREIGN KEY REFERENCES [Role] (RoleId),
+  PermissionId INT FOREIGN KEY REFERENCES Permission (PermissionId)
 );
 
 CREATE TABLE [User] (
@@ -36,18 +36,19 @@ CREATE TABLE Faculty (
   DLTId     INT FOREIGN KEY REFERENCES [User] (UserId),
   IsActive  BIT             DEFAULT 1
 );
+
 --TODO: Need to put CL + CM out of course
 CREATE TABLE Course (
-  CourseId        VARCHAR(10) PRIMARY KEY,
-  Title           VARCHAR(50) NOT NULL,
-  AcademicSession VARCHAR(50) NOT NULL, --TODO: Can be 2016, 2015,..
-  StudentNumber   INT         NOT NULL,
-  CreateDate      DATE DEFAULT GETDATE(),
-  StartDate       DATE        NOT NULL,
-  EndDate         DATE        NOT NULL,
-  FacultyId       INT FOREIGN KEY REFERENCES Faculty (FacultyId),
-  CLId            INT FOREIGN KEY REFERENCES [User] (UserId),
-  CMId            INT FOREIGN KEY REFERENCES [User] (UserId)
+  CourseId      VARCHAR(10) PRIMARY KEY,
+  Title         VARCHAR(50) NOT NULL,
+  AcademicYear  INT         NOT NULL, --TODO: Can be 2016, 2015,..
+  StudentNumber INT         NOT NULL,
+  CreateDate    DATE DEFAULT GETDATE(),
+  StartDate     DATE        NOT NULL,
+  EndDate       DATE        NOT NULL,
+  FacultyId     INT FOREIGN KEY REFERENCES Faculty (FacultyId),
+  CLId          INT FOREIGN KEY REFERENCES [User] (UserId),
+  CMId          INT FOREIGN KEY REFERENCES [User] (UserId)
 );
 
 CREATE TABLE CMR (
@@ -105,46 +106,49 @@ INSERT INTO [Role] VALUES ('CM', 'Course Moderator', 'CM of course', 1);
 INSERT INTO [Role] VALUES ('CL', 'Course Leader', 'CL of course', 1);
 INSERT INTO [Role] VALUES ('GUEST', 'Guest', 'Guest account for each faculty', 1);
 
-INSERT INTO Permission VALUES ('index','index');
-INSERT INTO Permission VALUES ('list courses','courses.list');
-INSERT INTO Permission VALUES ('view detail cmr report','cmr-report.get');
-INSERT INTO Permission VALUES ('add new cmr report','cmr-report.add');
-INSERT INTO Permission VALUES ('delete cmr report','cmr-report.delete');
-INSERT INTO Permission VALUES ('submit cmr report','cmr-report.submit');
-INSERT INTO Permission VALUES ('list cmr report','cmr-report.list');
+INSERT INTO Permission VALUES ('index', 'index');
+INSERT INTO Permission VALUES ('list courses', 'courses.list');
+INSERT INTO Permission VALUES ('view detail cmr report', 'cmr-report.get');
+INSERT INTO Permission VALUES ('add new cmr report', 'cmr-report.add');
+INSERT INTO Permission VALUES ('delete cmr report', 'cmr-report.delete');
+INSERT INTO Permission VALUES ('submit cmr report', 'cmr-report.submit');
+INSERT INTO Permission VALUES ('list cmr report', 'cmr-report.list');
+INSERT INTO Permission VALUES ('create courses', 'courses.create');
+INSERT INTO Permission VALUES ('save courses', 'courses.save');
 --Permission index
-INSERT INTO Role_Permission VALUES ('ADM',1);
-INSERT INTO Role_Permission VALUES ('PVC',1);
-INSERT INTO Role_Permission VALUES ('DLT',1);
-INSERT INTO Role_Permission VALUES ('CM',1);
-INSERT INTO Role_Permission VALUES ('CL',1);
-INSERT INTO Role_Permission VALUES ('GUEST',1);
+INSERT INTO Role_Permission VALUES ('ADM', 1);
+INSERT INTO Role_Permission VALUES ('PVC', 1);
+INSERT INTO Role_Permission VALUES ('DLT', 1);
+INSERT INTO Role_Permission VALUES ('CM', 1);
+INSERT INTO Role_Permission VALUES ('CL', 1);
+INSERT INTO Role_Permission VALUES ('GUEST', 1);
 --Permission list courses
-INSERT INTO Role_Permission VALUES ('ADM',2);
-INSERT INTO Role_Permission VALUES ('PVC',2);
-INSERT INTO Role_Permission VALUES ('DLT',2);
-INSERT INTO Role_Permission VALUES ('CM',2);
-INSERT INTO Role_Permission VALUES ('CL',2);
-INSERT INTO Role_Permission VALUES ('GUEST',2);
+INSERT INTO Role_Permission VALUES ('ADM', 2);
+INSERT INTO Role_Permission VALUES ('PVC', 2);
+INSERT INTO Role_Permission VALUES ('DLT', 2);
+INSERT INTO Role_Permission VALUES ('CM', 2);
+INSERT INTO Role_Permission VALUES ('CL', 2);
 --Permission get courses
-INSERT INTO Role_Permission VALUES ('PVC',3);
-INSERT INTO Role_Permission VALUES ('DLT',3);
-INSERT INTO Role_Permission VALUES ('CM',3);
-INSERT INTO Role_Permission VALUES ('CL',3);
+INSERT INTO Role_Permission VALUES ('PVC', 3);
+INSERT INTO Role_Permission VALUES ('DLT', 3);
+INSERT INTO Role_Permission VALUES ('CM', 3);
+INSERT INTO Role_Permission VALUES ('CL', 3);
 --Permission add new cmr
-INSERT INTO Role_Permission VALUES ('CL',4);
+INSERT INTO Role_Permission VALUES ('CL', 4);
 --Permission delete cmr
-INSERT INTO Role_Permission VALUES ('CL',5);
+INSERT INTO Role_Permission VALUES ('CL', 5);
 --Permission submit cmr
-INSERT INTO Role_Permission VALUES ('DLT',6);
-INSERT INTO Role_Permission VALUES ('CM',6);
-INSERT INTO Role_Permission VALUES ('CL',6);
+INSERT INTO Role_Permission VALUES ('DLT', 6);
+INSERT INTO Role_Permission VALUES ('CM', 6);
+INSERT INTO Role_Permission VALUES ('CL', 6);
 --Permission list cmr
-INSERT INTO Role_Permission VALUES ('ADM',7);
-INSERT INTO Role_Permission VALUES ('PVC',7);
-INSERT INTO Role_Permission VALUES ('DLT',7);
-INSERT INTO Role_Permission VALUES ('CM',7);
-INSERT INTO Role_Permission VALUES ('CL',7);
+INSERT INTO Role_Permission VALUES ('PVC', 7);
+INSERT INTO Role_Permission VALUES ('DLT', 7);
+INSERT INTO Role_Permission VALUES ('CM', 7);
+INSERT INTO Role_Permission VALUES ('CL', 7);
+--Permission create and save courses
+INSERT INTO Role_Permission VALUES ('ADM', 8);
+INSERT INTO Role_Permission VALUES ('ADM', 9);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);
@@ -154,7 +158,7 @@ INSERT INTO AssessmentMethod VALUES (4, 'EXAM', 'Exam', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (5, 'OVERALL', 'Overall', DEFAULT);
 
 INSERT INTO [User] VALUES
-  ('Administrator', 'Administrator', 'cmr@gmail.com', '$2a$10$zxZOazEeNe9EiZxpiVvVoeIln6gPtE1niU6c25cLPSNpa5wlGsOii',
+  ('Administrator', 'Administrator', 'admin', '$2a$10$zxZOazEeNe9EiZxpiVvVoeIln6gPtE1niU6c25cLPSNpa5wlGsOii',
    DEFAULT, 1, 'ADM'); --admin
 INSERT INTO [User] VALUES
   ('ChinhPVC', 'Nguyen', 'chinhnkgt00494@fpt.edu.vn', '$2a$10$zxZOazEeNe9EiZxpiVvVoeIln6gPtE1niU6c25cLPSNpa5wlGsOii',

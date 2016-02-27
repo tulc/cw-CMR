@@ -8,7 +8,7 @@ import play.api.mvc.Controller
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import util.EmailUtil
 
-import scala.concurrent.{Future, Await}
+import scala.concurrent.Await
 import scala.concurrent.duration._
 
 
@@ -69,7 +69,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
         course <- courseDAO.findById(cmr.head.courseId)
         faculty <- facultyDAO.findById(course.head.facultyId)
         cmUser <- userDAO.findUserById(course.head.cmId)
-        email <- emailUtil.send(emailUtil.buildEmail(cmrId, "submitted", course.head.title, course.head.courseId,
+        email <- emailUtil.send(emailUtil.buildEmailNotifyNewAction(cmrId, "submitted", course.head.title, course.head.courseId,
           faculty.head.name, Seq(cmUser.head.email), "Course Leader " + userLogin.firstName + " " + userLogin.lastName))
       } yield ()
       case "CM" => for {
@@ -78,7 +78,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
         faculty <- facultyDAO.findById(course.head.facultyId)
         dltUser <- userDAO.findUserById(faculty.head.dltId)
         pvcUser <- userDAO.findUserById(faculty.head.pvcId)
-        email <- emailUtil.send(emailUtil.buildEmail(cmrId, "approved", course.head.title, course.head.courseId,
+        email <- emailUtil.send(emailUtil.buildEmailNotifyNewAction(cmrId, "approved", course.head.title, course.head.courseId,
           faculty.head.name, Seq(dltUser.head.email, pvcUser.head.email), "Course Moderator " + userLogin.firstName + " " + userLogin.lastName))
       } yield ()
       case "DLT" => for {
@@ -89,7 +89,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
         cmUser <- userDAO.findUserById(course.head.cmId)
         dltUser <- userDAO.findUserById(faculty.head.dltId)
         pvcUser <- userDAO.findUserById(faculty.head.pvcId)
-        email <- emailUtil.send(emailUtil.buildEmail(cmrId, "commented", course.head.title, course.head.courseId,
+        email <- emailUtil.send(emailUtil.buildEmailNotifyNewAction(cmrId, "commented", course.head.title, course.head.courseId,
           faculty.head.name, Seq(clUser.head.email, cmUser.head.email, dltUser.head.email, pvcUser.head.email), "Director of Learning and Quality " + userLogin.firstName + " " + userLogin.lastName))
       } yield ()
     }

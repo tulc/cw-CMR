@@ -3,11 +3,9 @@ package dao
 import java.sql.Date
 import javax.inject.{Inject, Singleton}
 
-import akka.japi.Option.scala2JavaOption
 import models.User
 import org.mindrot.jbcrypt.BCrypt
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.libs.openid.Errors.AUTH_CANCEL
 import slick.driver.JdbcProfile
 
 import scala.concurrent.duration._
@@ -48,4 +46,6 @@ class UserDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider) e
     Await.result(findByEmail(email).map{u => u.filter(user => BCrypt.checkpw(password, user.password))}, Duration(2, SECONDS))
 
   def findByEmail(email: String): Future[Option[User]] = db.run(users.filter(_.email === email).result.headOption)
+
+  def findByRole(roleId : String) : Future[Seq[User]] = db.run(users.filter(_.roleId === roleId).result)
 }

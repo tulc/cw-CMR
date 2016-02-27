@@ -66,25 +66,25 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
 
   def findByUser(userRole: String, userId: Int) : Future[Seq[(CMR,Option[Course], Option[Faculty], Option[User], Option[User])]] = {
     val clQuery = for {
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filter(_.status === "Commented").joinLeft(courses.filter(_.clId === userId)).on(_.courseId === _.courseId)
+      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.joinLeft(courses.filter(_.clId === userId)).on(_.courseId === _.courseId)
         .joinLeft(faculties).on(_._2.map(c => c.facultyId) === _.facultyId)
         .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
         .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
     } yield (cmrs, courses, faculties, clUser, cmUser)
     val cmQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filter(_.status === "Commented").joinLeft(courses.filter(_.cmId === userId)).on(_.courseId === _.courseId)
+      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses.filter(_.cmId === userId)).on(_.courseId === _.courseId)
         .joinLeft(faculties).on(_._2.map(c => c.facultyId) === _.facultyId)
         .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
         .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
     } yield (cmrs, courses, faculties, clUser, cmUser)
     val dltQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.joinLeft(courses).on(_.courseId === _.courseId)
+      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses).on(_.courseId === _.courseId)
         .joinLeft(faculties.filter(_.dltId === userId)).on(_._2.map(c => c.facultyId) === _.facultyId)
         .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
         .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
     } yield (cmrs, courses, faculties, clUser, cmUser)
     val pvcQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.joinLeft(courses).on(_.courseId === _.courseId)
+      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses).on(_.courseId === _.courseId)
         .joinLeft(faculties.filter(_.pvcId === userId)).on(_._2.map(c => c.facultyId) === _.facultyId)
         .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
         .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
@@ -95,5 +95,15 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
       case "DLT" => db.run(dltQuery.result)
       case "PVC" => db.run(pvcQuery.result)
     }
+  }
+
+  def findUserDLTByStatus(status: String) : Future[Seq[Option[User]]] = {
+    val query = for {
+      (((cmrs ,courses), faculties), dltUser) <- cmrs.filter(_.status === status)
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(c => c.facultyId) === _.facultyId)
+        .joinLeft(users).on(_._2.map(f => f.dltId) === _.userId)
+    }yield (dltUser)
+    db.run(query.result)
   }
 }

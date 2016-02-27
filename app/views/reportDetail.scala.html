@@ -9,8 +9,8 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Academic Session :</td>
-                    <td>@data._2.head.academicSession</td>
+                    <td>Academic Year :</td>
+                    <td>@data._2.head.academicYear</td>
                 </tr>
                 <tr>
                     <td>Course Code + title :</td>
@@ -78,6 +78,15 @@
             }
             </tbody>
         </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr class="table-title">
+                    <th colspan="3">Action to be taken</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
         <form action="#">
             <table class="table">
                 <tr class="table-title">
@@ -103,13 +112,13 @@
                             class="btn btn-primary" type="button" value="Submit Report"/>
                         }
                         @*If user role is CM and report status is submitted -> you can view this section*@
-                        @if(user.roleId == "CM" && data._1.head.status == "Submitted"){
-                            <input type="button" class="btn btn-danger" value="Reject notSupportYet"/>
+                        @if(user.roleId == "CM" && data._1.head.status == "Submitted") {
+                            @*<input type="button" class="btn btn-danger" value="Reject notSupportYet"/>*@
                             <input type="button" id="btnSubmit" class="btn btn-primary"
                             data-href="@routes.CMRController.submit(data._1.head.cmrId)" value="Approve"/>
                         }
                         @*If user role is DLT and report status is approved -> you can view this section*@
-                        @if(user.roleId == "DLT" && data._1.head.status == "Approved"){
+                        @if(user.roleId == "DLT" && data._1.head.status == "Approved") {
                             <input type="button" id="btnSubmit" class="btn btn-primary" value="Comment"
                             data-href="@routes.CMRController.submit(data._1.head.cmrId)" />
                         }
@@ -136,7 +145,6 @@
                 </div>
             </div>
         }
-
         <div class="modal fade" id="modal-notify" tabindex="-1" role="dialog" aria-labelledby="modalRemoveConfirm" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

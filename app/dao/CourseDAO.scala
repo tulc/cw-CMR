@@ -20,7 +20,7 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
   class Courses(tag: Tag) extends Table[Course](tag, "Course") {
     def courseId = column[String]("CourseId", O.PrimaryKey)
     def title = column[String]("Title")
-    def academicSession = column[String]("AcademicSession")
+    def academicYear = column[Int]("AcademicYear")
     def studentNumber = column[Int]("StudentNumber")
     def createDate = column[Date]("CreateDate")
     def startDate = column[Date]("StartDate")
@@ -29,7 +29,7 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
     def clId = column[Int]("CLId")
     def cmId = column[Int]("CMId")
 
-    def * = (courseId,title , academicSession, studentNumber, createDate, startDate, endDate, facultyId, clId, cmId) <>((Course.apply _).tupled, Course.unapply _)
+    def * = (courseId,title , academicYear, studentNumber, createDate, startDate, endDate, facultyId, clId, cmId) <>((Course.apply _).tupled, Course.unapply _)
   }
 }
 
@@ -69,11 +69,28 @@ class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
         .joinLeft(users).on(_._1.cmId === _.userId)
         .joinLeft(users).on(_._1._1.clId === _.userId)
     } yield (course,faculty, userCM, userCL)
+    val admQuery = for {
+      (((course,faculty),userCM), userCL) <- courses
+        .joinLeft(faculties).on(_.facultyId === _.facultyId)
+        .joinLeft(users).on(_._1.cmId === _.userId)
+        .joinLeft(users).on(_._1._1.clId === _.userId)
+    } yield (course,faculty, userCM, userCL)
     roleId match {
       case ("CL") => db.run(clQuery.sortBy(_._1.endDate.desc).result)
       case ("CM") => db.run(cmQuery.sortBy(_._1.endDate.desc).result)
       case ("DLT") => db.run(dltQuery.sortBy(_._1.endDate.desc).result)
       case ("PVC") => db.run(pvcQuery.sortBy(_._1.endDate.desc).result)
+      case ("ADM") => db.run(admQuery.sortBy(_._1.endDate.desc).result)
     }
+  }
+
+  def findByAcademicYear(academic: Int): Future[Seq[Course]] = {
+    //TODO:Do this
+    if (academic == "") db.run(courses.sortBy(_.academicYear.desc).result)
+    else db.run(courses.filter(_.academicYear === academic).result)
+  }
+
+  def insert(course: Course) : Future[Int] = {
+    db.run(this.courses += course)
   }
 }
