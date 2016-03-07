@@ -54,8 +54,12 @@
                                         Course Report</a>
                                     </li>
                                 }
-                                <li role="presentation"><a href="#"><span class="fa fa-university"></span> Faculties</a></li>
-                                <li role="presentation"><a href="#"><span class="fa fa-users"></span> Users</a></li>
+                                @if(user.roleId == "ADM") {
+                                    <li role="presentation"><a href="#"><span class="fa fa-university"></span> Faculties</a></li>
+                                    <li role="presentation"><a href="#"><span class="fa fa-users"></span> Users</a></li>
+                                    <li role="presentation"><a href="@routes.ManagementToolController.create"><span class="fa fa-briefcase"></span> Management tools</a></li>
+                                    <li role="presentation"><a href="#"><span class="fa fa-wrench"></span> Test tools</a></li>
+                                }
                                 <li><hr/></li>
                                 <li role="presentation"><a href="#"><span class="fa fa-user"></span> Profile</a></li>
                                 <li role="presentation"><a href="@routes.Application.logout"><span class="fa fa-sign-out"></span> Sign Out</a></li>

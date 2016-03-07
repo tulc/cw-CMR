@@ -21,7 +21,7 @@ trait AcademicSeasonComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
     def startDate = column[Date]("StartDate")
     def endDate = column[Date]("EndDate")
 
-    def * = (academicSeasonId,name,startDate,endDate) <> ((AcademicSeason.apply _).tupled, AcademicSeason.unapply _)
+    def * = (academicSeasonId.?,name,startDate,endDate) <> ((AcademicSeason.apply _).tupled, AcademicSeason.unapply _)
   }
 }
 
@@ -34,4 +34,8 @@ class AcademicSeasonDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
 
   def findById(id: Int): Future[Option[AcademicSeason]] =
     db.run(academicSeasons.filter(_.academicSeasonId === id).result.headOption)
+
+  def insert(academicSeason: AcademicSeason) : Future[Int] = {
+    db.run(this.academicSeasons += academicSeason)
+  }
 }

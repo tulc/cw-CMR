@@ -33,4 +33,8 @@ class InfoCourseEachAcademicSeasonDAO @Inject()(protected val dbConfigProvider:D
 
   def findByPrimaryKey(courseId: String, academicId: Int): Future[Option[InfoCourseEachAcademicSeason]] =
     db.run(infoCourseEachAcademicSeasons.filter(info => info.academicSeasonId === academicId && info.courseId === courseId).result.headOption)
+
+  def insert(infoCourseEachAcademicSeason: InfoCourseEachAcademicSeason): Future[Int] = {
+    db.run(this.infoCourseEachAcademicSeasons += infoCourseEachAcademicSeason)
+  }
 }

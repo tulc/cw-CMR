@@ -11,9 +11,13 @@ GET     /                               controllers.Application.index
 
 ###Courses page
 GET     /courses                        controllers.CourseController.list
+
+###Management tools page
 #Create course
-GET     /courses/new                    controllers.CourseController.create
-POST    /courses                        controllers.CourseController.save
+GET     /management/new                 controllers.ManagementToolController.create
+POST    /courses                        controllers.ManagementToolController.saveCourse
+POST    /academicseasons                controllers.ManagementToolController.saveAcademicSeasons
+POST    /infocourseeachacademicseasons  controllers.ManagementToolController.saveInfoCourseEachAcademicSeasons
 
 ###CMR
 #Get CMR

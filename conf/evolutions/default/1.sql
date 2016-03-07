@@ -123,8 +123,10 @@ INSERT INTO Permission VALUES ('add new cmr report', 'cmr-report.add');
 INSERT INTO Permission VALUES ('delete cmr report', 'cmr-report.delete');
 INSERT INTO Permission VALUES ('submit cmr report', 'cmr-report.submit');
 INSERT INTO Permission VALUES ('list cmr report', 'cmr-report.list');
-INSERT INTO Permission VALUES ('create courses', 'courses.create');
-INSERT INTO Permission VALUES ('save courses', 'courses.save');
+INSERT INTO Permission VALUES ('management courses', 'management.create');
+INSERT INTO Permission VALUES ('save courses', 'management.courses.save');
+INSERT INTO Permission VALUES ('save academicseasons', 'management.academicseasons.save');
+INSERT INTO Permission VALUES ('save info', 'management.infocourseeachacademicseason.save');
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -156,9 +158,11 @@ INSERT INTO Role_Permission VALUES ('PVC', 7);
 INSERT INTO Role_Permission VALUES ('DLT', 7);
 INSERT INTO Role_Permission VALUES ('CM', 7);
 INSERT INTO Role_Permission VALUES ('CL', 7);
---Permission create and save courses
+--Permission create management page save courses and save academicseasons and save info
 INSERT INTO Role_Permission VALUES ('ADM', 8);
 INSERT INTO Role_Permission VALUES ('ADM', 9);
+INSERT INTO Role_Permission VALUES ('ADM', 10);
+INSERT INTO Role_Permission VALUES ('ADM', 11);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);

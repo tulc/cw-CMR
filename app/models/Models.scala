@@ -19,7 +19,7 @@ case class Faculty(facultyId: Int, name: String, pvcId: Int, dltId: Int, isActiv
 //TODO: Course has change
 case class Course(courseId: String, title: String, facultyId: Int)
 //TODO: AcademicSeason new
-case class AcademicSeason(academicSeasonId: Int, name: String, startDate: Date, endDate: Date)
+case class AcademicSeason(academicSeasonId: Option[Int], name: String, startDate: Date, endDate: Date)
 
 case class InfoCourseEachAcademicSeason(courseId: String, academicSeasonId: Int, studentNumber: Int, clId: Int, cmId: Int)
 //TODO: CMR has change

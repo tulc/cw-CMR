@@ -24,7 +24,7 @@
                     <span class="fa fa-search search-icon"></span>
                 </div>
                 @if(user.roleId == "ADM") {
-                    <a class="btn btn-primary pull-right" href="@routes.CourseController.create">Add course</a>
+                    <a class="btn btn-primary pull-right" href="@routes.ManagementToolController.create">Add course</a>
                 }
             </div>
         </div>
@@ -60,7 +60,7 @@
                         <td>@c._6.head.firstName @c._6.head.lastName</td>
                         <td>
                             @if(user.roleId == "CL") {
-                                <form action="@routes.CMRController.add(c._1.courseId,c._4.head.academicSeasonId)">
+                                <form action="@routes.CMRController.add(c._1.courseId,c._4.head.academicSeasonId.getOrElse(0))">
                                     <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
                                 </form>
                             }
