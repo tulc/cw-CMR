@@ -1,4 +1,4 @@
-@(data: Seq[(Course, Option[Faculty], Option[User], Option[User])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+@(data: Seq[(Course, Option[Faculty], Option[InfoCourseEachAcademicSeason], Option[AcademicSeason], Option[User], Option[User])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
     @main("Course Monitoring Reports", "Courses", user) {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -24,8 +24,7 @@
                     <span class="fa fa-search search-icon"></span>
                 </div>
                 @if(user.roleId == "ADM") {
-                    <a class="btn btn-primary pull-right" href="@routes.CourseController.create">
-                        <i class="fa fa-plus"></i> Add Course</a>
+                    <a class="btn btn-primary pull-right" href="@routes.CourseController.create">Add course</a>
                 }
             </div>
         </div>
@@ -53,15 +52,15 @@
                         <td>@c._1.courseId</td>
                         <td>@c._1.title</td>
                         <td>@c._2.head.name</td>
-                        <td>@c._1.academicYear</td>
-                        <td>@c._1.studentNumber</td>
-                        <td>@c._1.startDate</td>
-                        <td>@c._1.endDate</td>
-                        <td>@c._4.head.firstName @c._4.head.lastName</td>
-                        <td>@c._3.head.firstName @c._3.head.lastName</td>
+                        <td>@c._4.head.name</td>
+                        <td>@c._3.head.studentNumber</td>
+                        <td>@c._4.head.startDate</td>
+                        <td>@c._4.head.endDate</td>
+                        <td>@c._5.head.firstName @c._5.head.lastName</td>
+                        <td>@c._6.head.firstName @c._6.head.lastName</td>
                         <td>
                             @if(user.roleId == "CL") {
-                                <form action="@routes.CMRController.add(c._1.courseId)">
+                                <form action="@routes.CMRController.add(c._1.courseId,c._4.head.academicSeasonId)">
                                     <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
                                 </form>
                             }

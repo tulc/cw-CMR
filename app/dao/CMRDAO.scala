@@ -4,7 +4,7 @@ import java.sql.Date
 import java.util.Calendar
 import javax.inject.{Inject, Singleton}
 
-import models.{CMR, Course,Faculty,User}
+import models.{CMR, Course,Faculty,User, InfoCourseEachAcademicSeason, AcademicSeason}
 import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -16,7 +16,7 @@ import scala.concurrent.Future
   */
 @Singleton()
 class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile]
-  with UsersComponent with CoursesComponent with FacultiesComponent {
+  with UsersComponent with CoursesComponent with FacultiesComponent with InfoCourseEachAcademicSeasonComponent with AcademicSeasonComponent {
 
   import driver.api._
 
@@ -25,6 +25,7 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
     def status = column[String]("Status")
     def userCreateId = column[Int]("UserCreateId")
     def courseId = column[String]("CourseId")
+    def academicSeasonId = column[Int]("AcademicSeasonId")
     def createdDate = column[Date]("CreatedDate")
     def submittedDate = column[Option[Date]]("SubmittedDate")
     def userApprovedId = column[Option[Int]]("UserApprovedId")
@@ -33,7 +34,7 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
     def userCommentedId = column[Option[Int]]("Comment")
     def commentedDate = column[Option[Date]]("CommentedDate")
 
-    def * = (cmrId,status,userCreateId,courseId, createdDate,submittedDate,userApprovedId,
+    def * = (cmrId,status,userCreateId,courseId,academicSeasonId, createdDate,submittedDate,userApprovedId,
       approvedDate,comment,userCommentedId,commentedDate) <> ((CMR.apply _).tupled, CMR.unapply _)
   }
 
@@ -41,19 +42,23 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
   private lazy val courses = TableQuery[Courses]
   private lazy val users = TableQuery[Users]
   private lazy val faculties = TableQuery[Faculties]
+  private lazy val infoCourseEachAcademicSeasons = TableQuery[InfoCourseEachAcademicSeasons]
+  private lazy val academicSeasons = TableQuery[AcademicSeasons]
 
-  def insertCMR(courseId:String, userId:Int): Future[Int] ={
-    db.run(sqlu"EXECUTE usp_createCMR @courseId = $courseId, @userId = $userId")
+  def insertCMR(courseId:String, userId:Int, academicSeasonId: Int): Future[Int] ={
+    db.run(sqlu"EXECUTE usp_createCMR @courseId = $courseId, @academicSeasonId = $academicSeasonId, @userId = $userId")
   }
 
-  def findCMRByCourseId(courseId: String): Future[Seq[CMR]] = db.run(cmrs.filter(_.courseId === courseId).result)
+  def findCMRByCourseAcademicSeasonId(courseId: String, academicSeasonId: Int): Future[Seq[CMR]] =
+    db.run(cmrs.filter(cmr => cmr.courseId === courseId && cmr.academicSeasonId === academicSeasonId).result)
 
   def findCMRById(id: Int) : Future[Seq[CMR]] = db.run(cmrs.filter(_.cmrId === id).result)
 
   def removeCMRById(id: Int) : Future[Int] = db.run(cmrs.filter(_.cmrId === id).delete)
 
-  def findMaxId(courseId:String,userCreateId: Int) : Future[Int] = db.run(
-    cmrs.filter(_.courseId===courseId).filter(_.userCreateId===userCreateId).result).map(x => x.head.cmrId)
+  def findMaxId(courseId:String, userCreateId: Int, academicSeasonId: Int) : Future[Int] = db.run(
+    cmrs.filter(cmr => cmr.courseId===courseId && cmr.userCreateId===userCreateId && cmr.academicSeasonId===academicSeasonId)
+      .result).map(x => x.head.cmrId)
 
   def updateStatusCMR(id: Int, userRole: String, userId: Int) : Future[Int] = {
     val date = new Date(Calendar.getInstance().getTime.getTime)
@@ -64,31 +69,45 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
     }
   }
 
-  def findByUser(userRole: String, userId: Int) : Future[Seq[(CMR,Option[Course], Option[Faculty], Option[User], Option[User])]] = {
+  def findByUser(userRole: String, userId: Int) :
+  Future[Seq[(CMR,Option[Course], Option[Faculty], Option[InfoCourseEachAcademicSeason], Option[AcademicSeason],
+    Option[User], Option[User])]] = {
     val clQuery = for {
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.joinLeft(courses.filter(_.clId === userId)).on(_.courseId === _.courseId)
-        .joinLeft(faculties).on(_._2.map(c => c.facultyId) === _.facultyId)
-        .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
-    } yield (cmrs, courses, faculties, clUser, cmUser)
+      ((((((cmrs, courses),faculties),info),academicSeason),clUser),cmUser) <- cmrs
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(infoCourseEachAcademicSeasons.filter(_.clId === userId)).on(_._1._1.courseId === _.courseId)
+        .joinLeft(academicSeasons).on(_._1._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
+        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
+    } yield (cmrs, courses, faculties, info, academicSeason, clUser, cmUser)
     val cmQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses.filter(_.cmId === userId)).on(_.courseId === _.courseId)
-        .joinLeft(faculties).on(_._2.map(c => c.facultyId) === _.facultyId)
-        .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
-    } yield (cmrs, courses, faculties, clUser, cmUser)
+      ((((((cmrs, courses),faculties),info),academicSeason),clUser),cmUser) <- cmrs.filterNot(_.status === "Created")
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(infoCourseEachAcademicSeasons.filter(_.cmId === userId)).on(_._1._1.courseId === _.courseId)
+        .joinLeft(academicSeasons).on(_._1._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
+        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
+    } yield (cmrs, courses, faculties, info, academicSeason, clUser, cmUser)
     val dltQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses).on(_.courseId === _.courseId)
-        .joinLeft(faculties.filter(_.dltId === userId)).on(_._2.map(c => c.facultyId) === _.facultyId)
-        .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
-    } yield (cmrs, courses, faculties, clUser, cmUser)
+      ((((((cmrs, courses),faculties),info),academicSeason),clUser),cmUser) <- cmrs.filterNot(_.status === "Created")
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties.filter(_.dltId === userId)).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(infoCourseEachAcademicSeasons).on(_._1._1.courseId === _.courseId)
+        .joinLeft(academicSeasons).on(_._1._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
+        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
+    } yield (cmrs, courses, faculties, info, academicSeason, clUser, cmUser)
     val pvcQuery = for{
-      ((((cmrs, courses),faculties),clUser),cmUser) <- cmrs.filterNot(_.status === "Created").joinLeft(courses).on(_.courseId === _.courseId)
-        .joinLeft(faculties.filter(_.pvcId === userId)).on(_._2.map(c => c.facultyId) === _.facultyId)
-        .joinLeft(users).on(_._1._2.map(c => c.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(c => c.cmId) === _.userId)
-    } yield (cmrs, courses, faculties, clUser, cmUser)
+      ((((((cmrs, courses), faculties), info), academicSeason),clUser), cmUser) <- cmrs.filterNot(_.status === "Created")
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties.filter(_.pvcId === userId)).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(infoCourseEachAcademicSeasons).on(_._1._1.courseId === _.courseId)
+        .joinLeft(academicSeasons).on(_._1._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
+        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
+    } yield (cmrs, courses, faculties, info, academicSeason, clUser, cmUser)
     userRole match {
       case "CL" => db.run(clQuery.result)
       case "CM" => db.run(cmQuery.result)

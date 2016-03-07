@@ -1,4 +1,5 @@
-@(data: (Seq[CMR], Option[Course], Option[User], Seq[GradeStatistic], Seq[GradeDistribution], Seq[AssessmentMethod]), user: User)
+@(data: (Seq[CMR], Option[Course], Option[AcademicSeason], Option[InfoCourseEachAcademicSeason],
+        Option[User], Seq[GradeStatistic], Seq[GradeDistribution], Seq[AssessmentMethod]), user: User)
     @main("Course Monitoring Reports", "Course Monitoring Report no." + data._1.head.cmrId, user) {
         <script src="@routes.Assets.versioned("js/reportDetail.js")" type="text/javascript"></script>
         <table class="table table-bordered">
@@ -10,7 +11,7 @@
             <tbody>
                 <tr>
                     <td>Academic Year :</td>
-                    <td>@data._2.head.academicYear</td>
+                    <td>@data._3.head.name</td>
                 </tr>
                 <tr>
                     <td>Course Code + title :</td>
@@ -18,11 +19,11 @@
                 </tr>
                 <tr>
                     <td>Course Leader : </td>
-                    <td>@data._3.head.firstName @data._3.head.lastName</td>
+                    <td>@data._5.head.firstName @data._5.head.lastName</td>
                 </tr>
                 <tr>
                     <td>Student count : </td>
-                    <td>@data._2.head.studentNumber</td>
+                    <td>@data._4.head.studentNumber</td>
                 </tr>
             </tbody>
         </table>
@@ -33,13 +34,13 @@
                 </tr>
                 <tr>
                     <th></th>
-                    @for(assessment <- data._6) {
+                    @for(assessment <- data._8) {
                         <th>@assessment.name</th>
                     }
                 </tr>
             </thead>
             <tbody>
-            @Option(data._4.groupBy(_.statisticType)).map { statisticsGrouped =>
+            @Option(data._6.groupBy(_.statisticType)).map { statisticsGrouped =>
                 @statisticsGrouped.map { records =>
                     <tr>
                         <td>@records._1</td>
@@ -58,16 +59,16 @@
                 </tr>
                 <tr>
                     <th></th>
-                    @data._5.filter(_.assessmentMethodId == 1).map { x =>
+                    @data._7.filter(_.assessmentMethodId == 1).map { x =>
                         <th>@x.distributionType</th>
                     }
                 </tr>
             </thead>
             <tbody>
-            @for(assessment <- data._6) {
+            @for(assessment <- data._8) {
                 <tr>
                     <td>@assessment.name</td>
-                    @data._5.filter(_.assessmentMethodId == assessment.assessmentMethodId).map { x =>
+                    @data._7.filter(_.assessmentMethodId == assessment.assessmentMethodId).map { x =>
                         @if(x.value.get == 0) {
                             <td></td>
                         } else {

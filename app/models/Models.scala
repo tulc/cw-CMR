@@ -16,11 +16,14 @@ case class User(userId: Int, firstName: String, lastName: String,
 case class Role(roleId: String, name: String, description: String, isActive: Char)
 
 case class Faculty(facultyId: Int, name: String, pvcId: Int, dltId: Int, isActive: Char)
+//TODO: Course has change
+case class Course(courseId: String, title: String, facultyId: Int)
+//TODO: AcademicSeason new
+case class AcademicSeason(academicSeasonId: Int, name: String, startDate: Date, endDate: Date)
 
-case class Course(courseId: String, title: String, academicYear: Int, studentNumber: Int,
-                  createDate: Date, startDate: Date, endDate: Date, facultyId: Int, clId: Int, cmId: Int)
-
-case class CMR(cmrId: Int, status: String, userCreateId: Int, courseId: String, createdDate: Date, submittedDate: Option[Date],
+case class InfoCourseEachAcademicSeason(courseId: String, academicSeasonId: Int, studentNumber: Int, clId: Int, cmId: Int)
+//TODO: CMR has change
+case class CMR(cmrId: Int, status: String, userCreateId: Int, courseId: String, academicSeasonId: Int, createdDate: Date, submittedDate: Option[Date],
                userApprovedId: Option[Int], approvedDate: Option[Date], comment: Option[String],
                userCommentedId: Option[Int], commentedDate: Option[Date])
 
@@ -31,4 +34,5 @@ case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionTy
 case class AssessmentMethod(assessmentMethodId: Int, priority: Int, name: String, description: String, isActive: Char)
 
 case class Permission(permissionId: Int, name: String, path: String)
+
 case class RolePermission(roleId: String, permissionId: Int)

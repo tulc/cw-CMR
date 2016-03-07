@@ -19,7 +19,7 @@ POST    /courses                        controllers.CourseController.save
 #Get CMR
 GET     /cmr-report/:cmrId              controllers.CMRController.get(cmrId: Int)
 #Add CMR
-POST    /cmr-report/add                 controllers.CMRController.add(courseId: String)
+POST    /cmr-report/add                 controllers.CMRController.add(courseId: String, academicSeasonId: Int)
 #Delete CMR
 POST    /cmr-report/:cmrId/delete       controllers.CMRController.delete(cmrId: Int)
 #Submit CMR

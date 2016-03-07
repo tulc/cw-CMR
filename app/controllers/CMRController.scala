@@ -17,7 +17,8 @@ import scala.concurrent.duration._
   */
 class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO: UserDAO, roleDAO: RoleDAO,
                               gradeStatisticDAO: GradeStatisticDAO, gradeDistributionDAO: GradeDistributionDAO,
-                              assessmentMethodDAO: AssessmentMethodDAO, emailUtil: EmailUtil, facultyDAO: FacultyDAO)
+                              assessmentMethodDAO: AssessmentMethodDAO, emailUtil: EmailUtil, facultyDAO: FacultyDAO,
+                              academicSeasonDAO: AcademicSeasonDAO, infoCourseEachAcademicSeasonDAO: InfoCourseEachAcademicSeasonDAO)
   extends Controller with AuthConfigImpl with AuthElement {
 
   def get(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.get")) { implicit request =>
@@ -25,21 +26,23 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     val cmrPage = for {
       cmr <- cmrDAO.findCMRById(cmrId)
       course <- courseDAO.findById(cmr.head.courseId)
-      clUser <- userDAO.findUserById(course.head.clId)
+      academicSeason <- academicSeasonDAO.findById(cmr.head.academicSeasonId)
+      info <- infoCourseEachAcademicSeasonDAO.findByPrimaryKey(cmr.head.courseId, cmr.head.academicSeasonId)
+      clUser <- userDAO.findUserById(info.head.clId)
       statics <- gradeStatisticDAO.findByCMRId(cmr.head.cmrId)
       distributions <- gradeDistributionDAO.findByCMRId(cmr.head.cmrId)
       assessments <- assessmentMethodDAO.findAll
-    } yield (cmr, course, clUser, statics, distributions, assessments)
+    } yield (cmr, course, academicSeason, info, clUser, statics, distributions, assessments)
     cmrPage.map(page =>
       Ok(views.html.reportDetail(page, userLogin))
     )
   }
 
-  def add(courseId: String) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.add")) { implicit request =>
+  def add(courseId: String, academicSeasonId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.add")) { implicit request =>
     val userLogin = loggedIn
     val checkExist = for {
       course <- courseDAO.findById(courseId)
-      cmr <- cmrDAO.findCMRByCourseId(courseId)
+      cmr <- cmrDAO.findCMRByCourseAcademicSeasonId(courseId, academicSeasonId)
     } yield (course, cmr)
     checkExist.map { case (course, cmr) =>
       if (course.isEmpty) {
@@ -47,8 +50,8 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
       } else if (cmr.nonEmpty) {
         Redirect(routes.CourseController.list()).flashing("info" -> "Can not create Course Monitoring Report. Because CMR has been created", "link" -> routes.CMRController.get(cmr.head.cmrId).toString)
       } else {
-        Await.result(cmrDAO.insertCMR(courseId, userLogin.userId), Duration(2, SECONDS))
-        val cmrId = Await.result(cmrDAO.findMaxId(courseId, userLogin.userId), Duration(2, SECONDS))
+        Await.result(cmrDAO.insertCMR(courseId, userLogin.userId, academicSeasonId), Duration(2, SECONDS))
+        val cmrId = Await.result(cmrDAO.findMaxId(courseId, userLogin.userId, academicSeasonId), Duration(2, SECONDS))
         Redirect(routes.CourseController.list()).flashing("success" -> "Course Monitoring Report has been created", "link" -> routes.CMRController.get(cmrId).toString)
       }
     }
@@ -68,7 +71,8 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
         cmr <- cmrDAO.findCMRById(cmrId)
         course <- courseDAO.findById(cmr.head.courseId)
         faculty <- facultyDAO.findById(course.head.facultyId)
-        cmUser <- userDAO.findUserById(course.head.cmId)
+        info <- infoCourseEachAcademicSeasonDAO.findByPrimaryKey(cmr.head.courseId, cmr.head.academicSeasonId)
+        cmUser <- userDAO.findUserById(info.head.cmId)
         email <- emailUtil.send(emailUtil.buildEmailNotifyNewAction(cmrId, "submitted", course.head.title, course.head.courseId,
           faculty.head.name, Seq(cmUser.head.email), "Course Leader " + userLogin.firstName + " " + userLogin.lastName))
       } yield ()
@@ -85,8 +89,9 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
         cmr <- cmrDAO.findCMRById(cmrId)
         course <- courseDAO.findById(cmr.head.courseId)
         faculty <- facultyDAO.findById(course.head.facultyId)
-        clUser <- userDAO.findUserById(course.head.clId)
-        cmUser <- userDAO.findUserById(course.head.cmId)
+        info <- infoCourseEachAcademicSeasonDAO.findByPrimaryKey(cmr.head.courseId, cmr.head.academicSeasonId)
+        clUser <- userDAO.findUserById(info.head.clId)
+        cmUser <- userDAO.findUserById(info.head.cmId)
         dltUser <- userDAO.findUserById(faculty.head.dltId)
         pvcUser <- userDAO.findUserById(faculty.head.pvcId)
         email <- emailUtil.send(emailUtil.buildEmailNotifyNewAction(cmrId, "commented", course.head.title, course.head.courseId,

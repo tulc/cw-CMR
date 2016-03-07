@@ -10,7 +10,6 @@ import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Controller
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import java.sql.Date
 
 /**
   * Created by chinhnk on 2/19/16.
@@ -23,14 +22,7 @@ class CourseController @Inject()(courseDAO: CourseDAO, val userDAO: UserDAO, rol
     mapping(
       "courseId" -> nonEmptyText,
       "title" -> nonEmptyText,
-      "academicYear" -> number(1900,3000),
-      "studentNumber" -> number(0,120),
-      "createDate" -> default(sqlDate("yyyy-MM-dd"), new Date((new java.util.Date).getTime)),
-      "startDate" -> sqlDate("yyyy-MM-dd"),
-      "endDate" -> sqlDate("yyyy-MM-dd"),
-      "facultyId" -> number,
-      "clId" -> number,
-      "cmId" -> number
+      "facultyId" -> number
     )(Course.apply)(Course.unapply)
   )
 
@@ -44,27 +36,17 @@ class CourseController @Inject()(courseDAO: CourseDAO, val userDAO: UserDAO, rol
 
   def create = AsyncStack(AuthorityKey -> roleDAO.authority("courses.create")) { implicit request =>
     val userLogin = loggedIn
-    val createCourseData = for{
-      faculties <- facultyDAO.findAll
-      userCM <- userDAO.findByRole("CL")
-      userCL <- userDAO.findByRole("CM")
-    } yield (faculties, userCM, userCL)
-    createCourseData.map(data =>
+    facultyDAO.findAll.map(data =>
       Ok(views.html.createCourse(courseForm, data ,userLogin))
     )
   }
 
   def save = AsyncStack(AuthorityKey -> roleDAO.authority("courses.save")) { implicit request =>
     val userLogin = loggedIn
-    val createCourseData = for{
-      faculties <- facultyDAO.findAll
-      userCL <- userDAO.findByRole("CL")
-      userCM <- userDAO.findByRole("CM")
-    } yield (faculties, userCM, userCL)
 
     courseForm.bindFromRequest.fold(
       formWithError => {
-        createCourseData.map(data => BadRequest(views.html.createCourse(formWithError, data ,userLogin)))
+        facultyDAO.findAll.map(data => BadRequest(views.html.createCourse(formWithError, data ,userLogin)))
       },
       course => {
         courseDAO.findById(course.courseId).map{ isCourseExist =>
@@ -79,3 +61,20 @@ class CourseController @Inject()(courseDAO: CourseDAO, val userDAO: UserDAO, rol
     )
   }
 }
+
+
+
+//  val courseForm = Form(
+//    mapping(
+//      "courseId" -> nonEmptyText,
+//      "title" -> nonEmptyText,
+//      "academicYear" -> number(1900,3000),
+//      "studentNumber" -> number(0,120),
+//      "createDate" -> default(sqlDate("yyyy-MM-dd"), new Date((new java.util.Date).getTime)),
+//      "startDate" -> sqlDate("yyyy-MM-dd"),
+//      "endDate" -> sqlDate("yyyy-MM-dd"),
+//      "facultyId" -> number,
+//      "clId" -> number,
+//      "cmId" -> number
+//    )(Course.apply)(Course.unapply)
+//  )

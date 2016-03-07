@@ -1,4 +1,4 @@
-@(data: Seq[(CMR, Option[Course], Option[Faculty], Option[User], Option[User])], user: User)
+@(data: Seq[(CMR, Option[Course], Option[Faculty], Option[InfoCourseEachAcademicSeason], Option[AcademicSeason], Option[User], Option[User])], user: User)
 @main("Course Monitoring Reports", "CMR Reports", user) {
     <div class="row div-table-search">
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -31,7 +31,7 @@
                         <td>@d._1.cmrId</td>
                         <td>@d._3.head.name</td>
                         <td>@d._2.head.title</td>
-                        <td>@d._2.head.academicYear</td>
+                        <td>@d._5.head.name</td>
                         @if(d._1.status == "Commented"){
                             <td class="text-success">@d._1.status</td>
                         } else{
@@ -40,8 +40,8 @@
                         <td>@d._1.submittedDate.getOrElse("N/A")</td>
                         <td>@d._1.approvedDate.getOrElse("N/A")</td>
                         <td>@d._1.commentedDate.getOrElse("N/A")</td>
-                        <td>@d._4.head.firstName @d._4.head.lastName</td>
-                        <td>@d._5.head.firstName @d._5.head.lastName</td>
+                        <td>@d._6.head.firstName @d._6.head.lastName</td>
+                        <td>@d._7.head.firstName @d._7.head.lastName</td>
                         <td>
                             <a href="@routes.CMRController.get(d._1.cmrId)">View</a>
                         </td>

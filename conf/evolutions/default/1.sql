@@ -37,32 +37,41 @@ CREATE TABLE Faculty (
   IsActive  BIT             DEFAULT 1
 );
 
---TODO: Need to put CL + CM out of course
 CREATE TABLE Course (
-  CourseId      VARCHAR(10) PRIMARY KEY,
-  Title         VARCHAR(50) NOT NULL,
-  AcademicYear  INT         NOT NULL, --TODO: Can be 2016, 2015,..
-  StudentNumber INT         NOT NULL,
-  CreateDate    DATE DEFAULT GETDATE(),
-  StartDate     DATE        NOT NULL,
-  EndDate       DATE        NOT NULL,
-  FacultyId     INT FOREIGN KEY REFERENCES Faculty (FacultyId),
-  CLId          INT FOREIGN KEY REFERENCES [User] (UserId),
-  CMId          INT FOREIGN KEY REFERENCES [User] (UserId)
+  CourseId VARCHAR(10) PRIMARY KEY,
+  Title    VARCHAR(50) NOT NULL,
+  FacultyId INT FOREIGN KEY REFERENCES Faculty (FacultyId),
+);
+
+CREATE TABLE AcademicSeason (
+  AcademicSeasonId INT PRIMARY KEY IDENTITY (1, 1),
+  Name             VARCHAR(50) NOT NULL, --2016 of course C00001
+  StartDate        DATE        NOT NULL,
+  EndDate          DATE        NOT NULL,
+);
+
+CREATE TABLE InfoCourseEachAcademicSeason (
+  CourseId         VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId),
+  AcademicSeasonId INT FOREIGN KEY REFERENCES AcademicSeason (AcademicSeasonId),
+  StudentNumber    INT NOT NULL,
+  CLId             INT FOREIGN KEY REFERENCES [User] (UserId),
+  CMId             INT FOREIGN KEY REFERENCES [User] (UserId),
+  PRIMARY KEY (CourseId, AcademicSeasonId)
 );
 
 CREATE TABLE CMR (
-  CMRId           INT PRIMARY KEY IDENTITY (1, 1),
-  Status          VARCHAR(20) NOT NULL, --REPORT STATUS (CREATED, SUBMITTED, APPROVED, COMMENTED, EXPIRED)
-  UserCreateId    INT FOREIGN KEY REFERENCES [User] (UserId),
-  CourseId        VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId),
-  CreatedDate     DATETIME        DEFAULT GETDATE(),
-  SubmittedDate   DATETIME,
-  UserApprovedId  INT,
-  ApprovedDate    DATETIME,
-  Comment         VARCHAR(255),
-  UserCommentedId INT,
-  CommentedDate   DATETIME
+  CMRId            INT PRIMARY KEY IDENTITY (1, 1),
+  Status           VARCHAR(20) NOT NULL, --REPORT STATUS (Created, Submitted, Approved, Commented, Expired)
+  UserCreateId     INT FOREIGN KEY REFERENCES [User] (UserId),
+  CourseId         VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId),
+  AcademicSeasonId INT FOREIGN KEY REFERENCES AcademicSeason (AcademicSeasonId),
+  CreatedDate      DATETIME        DEFAULT GETDATE(),
+  SubmittedDate    DATETIME,
+  UserApprovedId   INT,
+  ApprovedDate     DATETIME,
+  Comment          VARCHAR(255),
+  UserCommentedId  INT,
+  CommentedDate    DATETIME
 );
 
 CREATE TABLE AssessmentMethod (
@@ -96,7 +105,8 @@ CREATE TABLE Score (--Example table score of student
   ScoreId            INT PRIMARY KEY IDENTITY (1, 1),
   [Value]            FLOAT NOT NULL,
   AssessmentMethodId INT FOREIGN KEY REFERENCES AssessmentMethod (AssessmentMethodId),
-  CourseId           VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId)
+  CourseId           VARCHAR(10) FOREIGN KEY REFERENCES Course (CourseId),
+  AcademicSeasonId   INT FOREIGN KEY REFERENCES AcademicSeason (AcademicSeasonId)
 );
 
 INSERT INTO [Role] VALUES ('ADM', 'Administrator', 'Maintain the data of courses, staff, roles', 1);
@@ -183,29 +193,31 @@ INSERT INTO [User] VALUES
 
 INSERT INTO Faculty VALUES ('Computer Science', 2, 3, 1);
 
-INSERT INTO Course
-VALUES ('C00001', 'Software Engineering', YEAR(GETDATE()), 5, DEFAULT, GETDATE(), GETDATE() + 150, 1, 5, 4);
-INSERT INTO Course
-VALUES ('C00002', 'Database Analyst', YEAR(GETDATE()), 0, DEFAULT, GETDATE(), GETDATE() + 155, 1, 5, 4);
+INSERT INTO Course VALUES ('C00001', 'Software Engineering',1);
+INSERT INTO Course VALUES ('C00002', 'Database Analyst', 1);
 
+INSERT INTO AcademicSeason VALUES ('Spring 2016', GETDATE(), GETDATE() + 150)
+
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00001', 1, 5, 5, 4)
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00002', 1, 0, 5, 4)
 -- 5 student 5 cw1
-INSERT INTO Score VALUES (20, 1, 'C00001');
-INSERT INTO Score VALUES (70, 1, 'C00001');
-INSERT INTO Score VALUES (40, 1, 'C00001');
-INSERT INTO Score VALUES (20, 1, 'C00001');
-INSERT INTO Score VALUES (90, 1, 'C00001');
+INSERT INTO Score VALUES (20, 1, 'C00001', 1);
+INSERT INTO Score VALUES (70, 1, 'C00001', 1);
+INSERT INTO Score VALUES (40, 1, 'C00001', 1);
+INSERT INTO Score VALUES (20, 1, 'C00001', 1);
+INSERT INTO Score VALUES (90, 1, 'C00001', 1);
 -- 5 student 5 cw2
-INSERT INTO Score VALUES (40, 2, 'C00001');
-INSERT INTO Score VALUES (20, 2, 'C00001');
-INSERT INTO Score VALUES (30, 2, 'C00001');
-INSERT INTO Score VALUES (60, 2, 'C00001');
-INSERT INTO Score VALUES (80, 2, 'C00001');
+INSERT INTO Score VALUES (40, 2, 'C00001', 1);
+INSERT INTO Score VALUES (20, 2, 'C00001', 1);
+INSERT INTO Score VALUES (30, 2, 'C00001', 1);
+INSERT INTO Score VALUES (60, 2, 'C00001', 1);
+INSERT INTO Score VALUES (80, 2, 'C00001', 1);
 -- 5 student 5 overall
-INSERT INTO Score VALUES (30, 6, 'C00001');
-INSERT INTO Score VALUES (45, 6, 'C00001');
-INSERT INTO Score VALUES (35, 6, 'C00001');
-INSERT INTO Score VALUES (40, 6, 'C00001');
-INSERT INTO Score VALUES (85, 6, 'C00001');
+INSERT INTO Score VALUES (30, 6, 'C00001', 1);
+INSERT INTO Score VALUES (45, 6, 'C00001', 1);
+INSERT INTO Score VALUES (35, 6, 'C00001', 1);
+INSERT INTO Score VALUES (40, 6, 'C00001', 1);
+INSERT INTO Score VALUES (85, 6, 'C00001', 1);
 
 # --- !Downs
 DROP TABLE Score;
@@ -213,6 +225,8 @@ DROP TABLE GradeDistribution;
 DROP TABLE GradeStatistic;
 DROP TABLE AssessmentMethod;
 DROP TABLE CMR;
+DROP TABLE InfoCourseEachAcademicSeason;
+DROP TABLE AcademicSeason;
 DROP TABLE Course;
 DROP TABLE Faculty;
 DROP TABLE [User];
