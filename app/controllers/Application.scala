@@ -28,7 +28,7 @@ class Application @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messages
   def authenticate = Action.async { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),
-      user => gotoLoginSucceeded(user.get.userId)
+      user => gotoLoginSucceeded(user.get.userId.get)
     )
   }
 

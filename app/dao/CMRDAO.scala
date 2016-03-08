@@ -14,10 +14,8 @@ import scala.concurrent.Future
 /**
   * Created by chinhnk on 2/14/16.
   */
-@Singleton()
-class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile]
-  with UsersComponent with CoursesComponent with FacultiesComponent with InfoCourseEachAcademicSeasonComponent with AcademicSeasonComponent {
 
+trait CMRComponent{ self: HasDatabaseConfigProvider[JdbcProfile] =>
   import driver.api._
 
   class CMRs(tag: Tag) extends Table[CMR](tag, "CMR") {
@@ -37,6 +35,14 @@ class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) e
     def * = (cmrId,status,userCreateId,courseId,academicSeasonId, createdDate,submittedDate,userApprovedId,
       approvedDate,comment,userCommentedId,commentedDate) <> ((CMR.apply _).tupled, CMR.unapply _)
   }
+}
+
+@Singleton()
+class CMRDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile]
+  with UsersComponent with CoursesComponent with CMRComponent with FacultiesComponent
+  with InfoCourseEachAcademicSeasonComponent with AcademicSeasonComponent {
+
+  import driver.api._
 
   private lazy val cmrs = TableQuery[CMRs]
   private lazy val courses = TableQuery[Courses]

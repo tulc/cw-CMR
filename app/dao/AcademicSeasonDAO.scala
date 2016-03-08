@@ -1,6 +1,7 @@
 package dao
 
 import java.sql.Date
+import java.util
 import javax.inject.{Inject, Singleton}
 
 import models.AcademicSeason
@@ -31,6 +32,8 @@ class AcademicSeasonDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
   import driver.api._
 
   private lazy val academicSeasons = TableQuery[AcademicSeasons]
+
+  def findAll :Future[Seq[AcademicSeason]] = db.run(academicSeasons.filter(_.endDate > new Date(new util.Date().getTime)).result)
 
   def findById(id: Int): Future[Option[AcademicSeason]] =
     db.run(academicSeasons.filter(_.academicSeasonId === id).result.headOption)

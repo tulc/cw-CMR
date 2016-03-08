@@ -127,6 +127,11 @@ INSERT INTO Permission VALUES ('management courses', 'management.create');
 INSERT INTO Permission VALUES ('save courses', 'management.courses.save');
 INSERT INTO Permission VALUES ('save academicseasons', 'management.academicseasons.save');
 INSERT INTO Permission VALUES ('save info', 'management.infocourseeachacademicseason.save');
+INSERT INTO Permission VALUES ('user create', 'user.create');
+INSERT INTO Permission VALUES ('user save', 'user.save');
+INSERT INTO Permission VALUES ('user edit', 'user.edit');
+INSERT INTO Permission VALUES ('user delete', 'user.delete');
+INSERT INTO Permission VALUES ('user list', 'user.list');
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -163,6 +168,12 @@ INSERT INTO Role_Permission VALUES ('ADM', 8);
 INSERT INTO Role_Permission VALUES ('ADM', 9);
 INSERT INTO Role_Permission VALUES ('ADM', 10);
 INSERT INTO Role_Permission VALUES ('ADM', 11);
+--Permission create / save / edit/ delete / user
+INSERT INTO Role_Permission VALUES ('ADM', 12);
+INSERT INTO Role_Permission VALUES ('ADM', 13);
+INSERT INTO Role_Permission VALUES ('ADM', 14);
+INSERT INTO Role_Permission VALUES ('ADM', 15);
+INSERT INTO Role_Permission VALUES ('ADM', 16);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);
@@ -221,6 +232,7 @@ INSERT INTO Score VALUES (30, 6, 'C00001', 1);
 INSERT INTO Score VALUES (45, 6, 'C00001', 1);
 INSERT INTO Score VALUES (35, 6, 'C00001', 1);
 INSERT INTO Score VALUES (40, 6, 'C00001', 1);
+
 INSERT INTO Score VALUES (85, 6, 'C00001', 1);
 
 # --- !Downs

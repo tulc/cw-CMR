@@ -43,23 +43,35 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
       "courseId" -> nonEmptyText,
       "academicSeasonId" -> number,
       "studentNumber" -> number(0,120),
-      "clId" -> number,
-      "cmId" -> number
+      "clId" -> optional(number),
+      "cmId" -> optional(number)
     )(InfoCourseEachAcademicSeason.apply)(InfoCourseEachAcademicSeason.unapply)
   )
 
+  private def loadPageData = {
+    for {
+      faculty <- facultyDAO.findAll
+      course <- courseDAO.findAll
+      academic <- academicSeasonDAO.findAll
+      userCL <- userDAO.findByRole("CL")
+      userCM <- userDAO.findByRole("CM")
+    } yield (faculty,course,academic, userCL, userCM)
+  }
+
   def create = AsyncStack(AuthorityKey -> roleDAO.authority("management.create")) { implicit request =>
     val userLogin = loggedIn
-    facultyDAO.findAll.map(data =>
+
+    loadPageData.map(data =>
       Ok(views.html.managementTools(courseForm, academicSeasonForm, infoCourseEachAcademicSeasonForm, data ,userLogin))
     )
   }
   //TODO: Find the way better than that
   def saveCourse = AsyncStack(AuthorityKey -> roleDAO.authority("management.courses.save")) { implicit request =>
     val userLogin = loggedIn
+
     courseForm.bindFromRequest.fold(
       formWithError => {
-        facultyDAO.findAll.map(data => BadRequest(views.html.managementTools(formWithError, academicSeasonForm, infoCourseEachAcademicSeasonForm, data ,userLogin)))
+        loadPageData.map(data => BadRequest(views.html.managementTools(formWithError, academicSeasonForm, infoCourseEachAcademicSeasonForm, data ,userLogin)))
       },
       course => {
         courseDAO.findById(course.courseId).map{ isCourseExist =>
@@ -76,9 +88,10 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
 
   def saveAcademicSeasons = AsyncStack(AuthorityKey -> roleDAO.authority("management.academicseasons.save")) { implicit request =>
     val userLogin = loggedIn
+
     academicSeasonForm.bindFromRequest.fold(
       formWithError => {
-        facultyDAO.findAll.map(data => BadRequest(views.html.managementTools(courseForm, formWithError, infoCourseEachAcademicSeasonForm, data ,userLogin)))
+        loadPageData.map(data => BadRequest(views.html.managementTools(courseForm, formWithError, infoCourseEachAcademicSeasonForm, data ,userLogin)))
       },
       academicSeason => {
         academicSeasonDAO.insert(academicSeason)
@@ -91,11 +104,15 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
     val userLogin = loggedIn
     infoCourseEachAcademicSeasonForm.bindFromRequest.fold(
       formWithError => {
-        facultyDAO.findAll.map(data => BadRequest(views.html.managementTools(courseForm, academicSeasonForm, formWithError, data ,userLogin)))
+        loadPageData.map(data => BadRequest(views.html.managementTools(courseForm, academicSeasonForm, formWithError, data ,userLogin)))
       },
       info => {
-        infoCourseEachAcademicSeasonDAO.insert(info)
-        Future.successful{Redirect(routes.ManagementToolController.create()).flashing("success" -> "Assigned success")}
+        infoCourseEachAcademicSeasonDAO.findByPrimaryKey(info.courseId,info.academicSeasonId).map(checkInfoExist =>
+          if(checkInfoExist.isEmpty){
+            infoCourseEachAcademicSeasonDAO.insert(info)
+            Redirect(routes.ManagementToolController.create()).flashing("success" -> "Assigned success")
+          }else Redirect(routes.ManagementToolController.create()).flashing("error" -> "Assigned error. Because assigning between course and academic year has been available. Please check carefully")
+        )
       }
     )
   }

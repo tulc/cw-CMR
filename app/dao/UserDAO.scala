@@ -1,6 +1,7 @@
 package dao
 
 import java.sql.Date
+import java.util.Calendar
 import javax.inject.{Inject, Singleton}
 
 import models.User
@@ -21,12 +22,12 @@ trait UsersComponent{ self: HasDatabaseConfigProvider[JdbcProfile] =>
   import driver.api._
 
   class Users(tag:Tag) extends Table[User](tag,"User"){
-    def userId = column[Int]("UserId",O.PrimaryKey, O.AutoInc)
+    def userId = column[Option[Int]]("UserId",O.PrimaryKey, O.AutoInc)
     def firstName = column[String]("FirstName")
     def lastName = column[String]("LastName")
     def email = column[String]("Email")
     def password = column[String]("Password")
-    def createDate = column[Date]("CreateDate")
+    def createDate = column[Option[Date]]("CreateDate")
     def isActive = column[Char]("isActive")
     def roleId = column[String]("RoleId")
 
@@ -48,4 +49,14 @@ class UserDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider) e
   def findByEmail(email: String): Future[Option[User]] = db.run(users.filter(_.email === email).result.headOption)
 
   def findByRole(roleId : String) : Future[Seq[User]] = db.run(users.filter(_.roleId === roleId).result)
+
+  def findAll : Future[Seq[User]] = db.run(users.result)
+
+  def insert(user:User) = db.run{
+    val date = Option(new Date(Calendar.getInstance().getTime.getTime))
+    val userToInsert: User = user.copy(userId = null,password = BCrypt.hashpw(user.password, BCrypt.gensalt()), createDate = date)
+    this.users += userToInsert
+  }
+
+  def delete(userId: Int) = db.run(users.filter(_.userId === userId).delete)
 }

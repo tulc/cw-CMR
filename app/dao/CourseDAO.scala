@@ -2,7 +2,7 @@ package dao
 
 import javax.inject.{Singleton, Inject}
 
-import models.{User, Faculty, Course,InfoCourseEachAcademicSeason,AcademicSeason}
+import models.{User, Faculty, Course, InfoCourseEachAcademicSeason, AcademicSeason, CMR}
 import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
@@ -12,7 +12,9 @@ import scala.concurrent.Future
   * Created by chinhnk on 2/12/16.
   */
 
-trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
+trait CoursesComponent {
+  self: HasDatabaseConfigProvider[JdbcProfile] =>
+
   import driver.api._
 
   class Courses(tag: Tag) extends Table[Course](tag, "Course") {
@@ -20,13 +22,17 @@ trait CoursesComponent { self: HasDatabaseConfigProvider[JdbcProfile] =>
     def title = column[String]("Title")
     def facultyId = column[Int]("FacultyId")
 
-    def * = (courseId,title, facultyId) <>((Course.apply _).tupled, Course.unapply _)
+    def * = (courseId, title, facultyId) <>((Course.apply _).tupled, Course.unapply _)
   }
+
 }
+
 //TODO need fix
 @Singleton
 class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile]
-  with FacultiesComponent with UsersComponent with CoursesComponent with InfoCourseEachAcademicSeasonComponent with AcademicSeasonComponent{
+  with FacultiesComponent with CMRComponent with UsersComponent with CoursesComponent
+  with InfoCourseEachAcademicSeasonComponent with AcademicSeasonComponent {
+
   import driver.api._
 
   private lazy val courses = TableQuery[Courses]
@@ -34,51 +40,59 @@ class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   private lazy val users = TableQuery[Users]
   private lazy val infoCourseEachAcademicSeasons = TableQuery[InfoCourseEachAcademicSeasons]
   private lazy val academicSeasons = TableQuery[AcademicSeasons]
+  private lazy val cmrs = TableQuery[CMRs]
 
-  def findById(id:String): Future[Option[Course]] = db.run(courses.filter(_.courseId === id).result.headOption)
+  def findAll: Future[Seq[Course]] = db.run(courses.result)
 
-  def findByUserRole(roleId: String, userId: Int): Future[Seq[(Course, Option[Faculty],
-    Option[InfoCourseEachAcademicSeason], Option[AcademicSeason], Option[User], Option[User])]] = {
+  def findById(id: String): Future[Option[Course]] = db.run(courses.filter(_.courseId === id).result.headOption)
+
+  def findByUserRole(roleId: String, userId: Int): Future[Seq[(InfoCourseEachAcademicSeason, Option[Course],
+    Option[Faculty], Option[AcademicSeason], Option[User], Option[User], Option[CMR])]] = {
     val clQuery = for {
-      (((((course, faculty), info), academicSeason),userCL), userCM) <- courses
-        .joinLeft(faculties).on(_.facultyId === _.facultyId)
-        .joinLeft(infoCourseEachAcademicSeasons.filter(_.clId === userId)).on(_._1.courseId === _.courseId)
-        .joinLeft(academicSeasons).on(_._2.map(_.academicSeasonId) === _.academicSeasonId)
-        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
-    } yield (course,faculty,info, academicSeason, userCL, userCM)
+      ((((((info, course), faculty), academic), userCL), userCM), cmr) <- infoCourseEachAcademicSeasons.filter(_.clId === userId)
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(academicSeasons).on(_._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._1._1.clId === _.userId)
+        .joinLeft(users).on(_._1._1._1._1.cmId === _.userId)
+        .joinLeft(cmrs).on((left, cmr) => (left._1._1._1._1._1.courseId === cmr.courseId) && (left._1._1._1._1._1.academicSeasonId === cmr.academicSeasonId))
+    } yield (info, course, faculty, academic, userCL, userCM, cmr)
     val cmQuery = for {
-      (((((course, faculty), info), academicSeason),userCL), userCM) <- courses
-        .joinLeft(faculties).on(_.facultyId === _.facultyId)
-        .joinLeft(infoCourseEachAcademicSeasons.filter(_.cmId === userId)).on(_._1.courseId === _.courseId)
-        .joinLeft(academicSeasons).on(_._2.map(_.academicSeasonId) === _.academicSeasonId)
-        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
-    } yield (course,faculty,info, academicSeason, userCL, userCM)
+      ((((((info, course), faculty), academic), userCL), userCM), cmr) <- infoCourseEachAcademicSeasons.filter(_.cmId === userId)
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(academicSeasons).on(_._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._1._1.clId === _.userId)
+        .joinLeft(users).on(_._1._1._1._1.cmId === _.userId)
+        .joinLeft(cmrs).on((left, cmr) => (left._1._1._1._1._1.courseId === cmr.courseId) && (left._1._1._1._1._1.academicSeasonId === cmr.academicSeasonId))
+    } yield (info, course, faculty, academic, userCL, userCM, cmr)
     val dltQuery = for {
-      (((((course, faculty), info), academicSeason),userCL), userCM) <- courses
-        .joinLeft(faculties.filter(_.dltId === userId)).on(_.facultyId === _.facultyId)
-        .joinLeft(infoCourseEachAcademicSeasons).on(_._1.courseId === _.courseId)
-        .joinLeft(academicSeasons).on(_._2.map(_.academicSeasonId) === _.academicSeasonId)
-        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
-    } yield (course,faculty,info, academicSeason, userCL, userCM)
+      ((((((info, course), faculty), academic), userCL), userCM),cmr) <- infoCourseEachAcademicSeasons
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties.filter(_.dltId === userId)).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(academicSeasons).on(_._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._1._1.clId === _.userId)
+        .joinLeft(users).on(_._1._1._1._1.cmId === _.userId)
+        .joinLeft(cmrs).on((left, cmr) => (left._1._1._1._1._1.courseId === cmr.courseId) && (left._1._1._1._1._1.academicSeasonId === cmr.academicSeasonId))
+    } yield (info, course, faculty, academic, userCL, userCM, cmr)
     val pvcQuery = for {
-      (((((course, faculty), info), academicSeason),userCL), userCM) <- courses
-        .joinLeft(faculties.filter(_.pvcId === userId)).on(_.facultyId === _.facultyId)
-        .joinLeft(infoCourseEachAcademicSeasons).on(_._1.courseId === _.courseId)
-        .joinLeft(academicSeasons).on(_._2.map(_.academicSeasonId) === _.academicSeasonId)
-        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
-    } yield (course,faculty,info, academicSeason, userCL, userCM)
+      ((((((info, course), faculty), academic), userCL), userCM), cmr) <- infoCourseEachAcademicSeasons
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties.filter(_.pvcId === userId)).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(academicSeasons).on(_._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._1._1.clId === _.userId)
+        .joinLeft(users).on(_._1._1._1._1.cmId === _.userId)
+    .joinLeft(cmrs).on((left, cmr) => (left._1._1._1._1._1.courseId === cmr.courseId) && (left._1._1._1._1._1.academicSeasonId === cmr.academicSeasonId))
+    } yield (info, course, faculty, academic, userCL, userCM, cmr)
     val admQuery = for {
-      (((((course, faculty), info), academicSeason),userCL), userCM) <- courses
-        .joinLeft(faculties).on(_.facultyId === _.facultyId)
-        .joinLeft(infoCourseEachAcademicSeasons).on(_._1.courseId === _.courseId)
-        .joinLeft(academicSeasons).on(_._2.map(_.academicSeasonId) === _.academicSeasonId)
-        .joinLeft(users).on(_._1._2.map(_.clId) === _.userId)
-        .joinLeft(users).on(_._1._1._2.map(_.cmId) === _.userId)
-    } yield (course,faculty,info, academicSeason, userCL, userCM)
+      ((((((info, course), faculty), academic), userCL), userCM), cmr) <- infoCourseEachAcademicSeasons
+        .joinLeft(courses).on(_.courseId === _.courseId)
+        .joinLeft(faculties).on(_._2.map(_.facultyId) === _.facultyId)
+        .joinLeft(academicSeasons).on(_._1._1.academicSeasonId === _.academicSeasonId)
+        .joinLeft(users).on(_._1._1._1.clId === _.userId)
+        .joinLeft(users).on(_._1._1._1._1.cmId === _.userId)
+    .joinLeft(cmrs).on((left, cmr) => (left._1._1._1._1._1.courseId === cmr.courseId) && (left._1._1._1._1._1.academicSeasonId === cmr.academicSeasonId))
+    } yield (info, course, faculty, academic, userCL, userCM, cmr)
     roleId match {
       case ("CL") => db.run(clQuery.sortBy(_._4.map(_.endDate).desc).result)
       case ("CM") => db.run(cmQuery.sortBy(_._4.map(_.endDate).desc).result)
@@ -93,7 +107,7 @@ class CourseDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
     db.run(courses.result)
   }
 
-  def insert(course: Course) : Future[Int] = {
+  def insert(course: Course): Future[Int] = {
     db.run(this.courses += course)
   }
 }

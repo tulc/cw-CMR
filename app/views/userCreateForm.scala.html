@@ -1,0 +1,68 @@
+@(userForm: Form[Option[User]], listRole: Seq[Role], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+
+@import helper._
+
+@implicitFieldConstructor = @{
+    FieldConstructor(bootstrapCreateInput.f)
+}
+
+@main("Course Monitoring Reports", "Create User Form", user) {
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-select/css/bootstrap-select.min.css")">
+    <script src="@routes.Assets.versioned("lib/bootstrap-select/js/bootstrap-select.min.js")" type="text/javascript"></script>
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        @flash.get("success").map { message =>
+            <div class="alert alert-success">
+                <strong>Done!</strong> @message
+            </div>
+        }
+        @flash.get("error").map { message =>
+            <div class="alert alert-danger">
+                <strong>Opps!</strong> @message
+            </div>
+        }
+
+        <form method="post" class="form-horizontal" action="@routes.UserController.save">
+            @input(userForm("firstName"), '_label -> "First Name") { (id, name, value, args) =>
+                <input type="text" aria-describedby="helpBlock-@id" name="@name" placeholder="Chinh" class="form-control"
+                value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            @input(userForm("lastName"), '_label -> "Last Name") { (id, name, value, args) =>
+                <input type="text" aria-describedby="helpBlock-@id" name="@name" placeholder="Nguyen"
+                class="form-control" value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            @input(userForm("email"), '_label -> "Email") { (id, name, value, args) =>
+                <input type="email" aria-describedby="helpBlock-@id" name="@name" placeholder="xxx@@yourmail.com"
+                class="form-control" value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            @input(userForm("password"), '_label -> "Password") { (id, name, value, args) =>
+                <input type="password" aria-describedby="helpBlock-@id" name="@name"
+                class="form-control" value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            <div class="form-group">
+                <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Active</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="isActive" id="isActive">
+                        <option value="1">Active</option>
+                        <option value="0">Disable</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Role</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="roleId" id="roleId" data-live-search="true" data-size="10">
+                    @for(role <- listRole) {
+                        <option value="@role.roleId">@role.name</option>
+                    }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
+                    <input type="submit" value="Save" class="btn btn-primary">
+                    <a href="@routes.UserController.list()" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+}

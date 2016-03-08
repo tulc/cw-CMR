@@ -108,9 +108,9 @@
                     <td>
                         @*If user role is CL and report status is Created -> you can view this section*@
                         @if(user.roleId == "CL" && data._1.head.status == "Created") {
-                            <input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Remove Report"/>
                             <input id="btnSubmit" data-href="@routes.CMRController.submit(data._1.head.cmrId)"
                             class="btn btn-primary" type="button" value="Submit Report"/>
+                            <input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Remove Report"/>
                         }
                         @*If user role is CM and report status is submitted -> you can view this section*@
                         @if(user.roleId == "CM" && data._1.head.status == "Submitted") {

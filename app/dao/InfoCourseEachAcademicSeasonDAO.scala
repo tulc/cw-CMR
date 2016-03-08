@@ -21,7 +21,7 @@ trait InfoCourseEachAcademicSeasonComponent { self: HasDatabaseConfigProvider[Jd
     def clId = column[Int]("CLId")
     def cmId = column[Int]("CMId")
 
-    def * = (courseId,academicSeasonId,studentNumber,clId,cmId) <> ((InfoCourseEachAcademicSeason.apply _).tupled, InfoCourseEachAcademicSeason.unapply _)
+    def * = (courseId,academicSeasonId,studentNumber,clId.?,cmId.?) <> ((InfoCourseEachAcademicSeason.apply _).tupled, InfoCourseEachAcademicSeason.unapply _)
   }
 }
 @Singleton

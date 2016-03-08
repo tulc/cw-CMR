@@ -1,4 +1,4 @@
-@(data: Seq[(Course, Option[Faculty], Option[InfoCourseEachAcademicSeason], Option[AcademicSeason], Option[User], Option[User])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+@(data: Seq[(InfoCourseEachAcademicSeason, Option[Course], Option[Faculty], Option[AcademicSeason], Option[User], Option[User], Option[CMR])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
     @main("Course Monitoring Reports", "Courses", user) {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -50,19 +50,22 @@
                 @for(c <- data) {
                     <tr>
                         <td>@c._1.courseId</td>
-                        <td>@c._1.title</td>
-                        <td>@c._2.head.name</td>
+                        <td>@c._2.head.title</td>
+                        <td>@c._3.head.name</td>
                         <td>@c._4.head.name</td>
-                        <td>@c._3.head.studentNumber</td>
+                        <td>@c._1.studentNumber</td>
                         <td>@c._4.head.startDate</td>
                         <td>@c._4.head.endDate</td>
-                        <td>@c._5.head.firstName @c._5.head.lastName</td>
-                        <td>@c._6.head.firstName @c._6.head.lastName</td>
+                        <td>@c._5.map(_.firstName) @c._5.map(_.lastName)</td>
+                        <td>@c._6.map(_.firstName) @c._6.map(_.lastName)</td>
                         <td>
-                            @if(user.roleId == "CL") {
-                                <form action="@routes.CMRController.add(c._1.courseId,c._4.head.academicSeasonId.getOrElse(0))">
+                            @if(user.roleId == "CL" && c._7.isEmpty) {
+                                <form action="@routes.CMRController.add(c._1.courseId, c._4.head.academicSeasonId.get)">
                                     <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
                                 </form>
+                            }
+                            @if(user.roleId == "CL" && c._7.nonEmpty) {
+                                <a href="@routes.CMRController.get(c._7.head.cmrId)">View</a>
                             }
                             @if(user.roleId == "ADM"){
                                 <a href="#" >Edit</a>

@@ -1,17 +1,17 @@
 @(courseForm: Form[Course], academicSeasonForm: Form[AcademicSeason], infoCourseEachAcademicSeasonForm: Form[InfoCourseEachAcademicSeason],
-        data: Seq[Faculty], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
-    @import helper._
+        data: (Seq[Faculty], Seq[Course], Seq[AcademicSeason], Seq[User], Seq[User]), user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+@import helper._
 
-    @implicitFieldConstructor = @{
-        FieldConstructor(bootstrapCreateInput.f)
-    }
+@implicitFieldConstructor = @{
+    FieldConstructor(bootstrapCreateInput.f)
+}
 
-    @main("Course Monitoring Reports", "Management Tools", user) {
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css")">
-        <script src="@routes.Assets.versioned("lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.versioned("js/createCourse.js")" type="text/javascript"></script>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-select/css/bootstrap-select.min.css")">
-        <script src="@routes.Assets.versioned("lib/bootstrap-select/js/bootstrap-select.min.js")" type="text/javascript"></script>
+@main("Course Monitoring Reports", "Management Tools", user) {
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css")">
+    <script src="@routes.Assets.versioned("lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("js/createCourse.js")" type="text/javascript"></script>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-select/css/bootstrap-select.min.css")">
+    <script src="@routes.Assets.versioned("lib/bootstrap-select/js/bootstrap-select.min.js")" type="text/javascript"></script>
     <div class="col-sm-12 col-md-12 col-lg-12">
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -37,32 +37,12 @@
                 <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Faculty</label>
                 <div class="col-sm-9 col-md-6 col-lg-6">
                     <select class="selectpicker" data-style="my-drop-picker" name="facultyId" id="facultyId" data-live-search="true" data-size="10">
-                    @for(faculty <- data) {
+                    @for(faculty <- data._1) {
                         <option value="@faculty.facultyId">@faculty.name</option>
                     }
                     </select>
                 </div>
             </div>
-            @*<div class="form-group">*@
-            @*<label for="clId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Leader</label>*@
-            @*<div class="col-sm-9 col-md-6 col-lg-6">*@
-            @*<select class="selectpicker" data-style="my-drop-picker" name="clId" id="clId" data-live-search="true" data-size="10">*@
-            @*for(cl <- data._2) {*@
-            @*<option value="@cl.userId">@cl.roleId - @cl.firstName @cl.lastName</option>*@
-            @*}*@
-            @*</select>*@
-            @*</div>*@
-            @*</div>*@
-            @*<div class="form-group">*@
-            @*<label for="cmId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Moderator</label>*@
-            @*<div class="col-sm-9 col-md-6 col-lg-6">*@
-            @*<select class="selectpicker" data-style="my-drop-picker" name="cmId" id="cmId" data-live-search="true" data-size="10">*@
-            @*for(cm <- data._3) {*@
-            @*<option value="@cm.userId">@cm.roleId - @cm.firstName @cm.lastName</option>*@
-            @*}*@
-            @*</select>*@
-            @*</div>*@
-            @*</div>*@
             <div class="form-group">
                 <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
                     <input type="submit" value="Save course" class="btn btn-primary">
@@ -90,7 +70,6 @@
                     <span class="help-block">@academicSeasonForm.error("startDate").map(_ => "Start date invalid") @academicSeasonForm.error("endDate").map(_ => "End date invalid")</span>
                 </div>
             </div>
-
             <div class="form-group">
                 <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
                     <input type="submit" value="Save academic season" class="btn btn-primary">
@@ -100,12 +79,52 @@
         <hr/>
         <h3>Assign academic season to course</h3>
         <form method="post" class="form-horizontal" action="@routes.ManagementToolController.saveInfoCourseEachAcademicSeasons()">
-
+            <div class="form-group">
+                <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course - Academic Season</label>
+                <div class="col-sm-9 col-md-9 col-lg-9">
+                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="courseId" id="courseId" data-live-search="true" data-size="10">
+                    @for(course <- data._2) {
+                        <option value="@course.courseId">@course.title</option>
+                    }
+                    </select>
+                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="academicSeasonId" id="academicSeasonId" data-live-search="true" data-size="10">
+                    @for(academic <- data._3) {
+                        <option value="@academic.academicSeasonId">@academic.name (@academic.startDate - @academic.endDate)</option>
+                    }
+                    </select>
+                </div>
+            </div>
+            @input(infoCourseEachAcademicSeasonForm("studentNumber"), '_label -> "Student number") { (id, name, value, args) =>
+                <input type="text" aria-describedby="helpBlock-@id" name="@name" class="form-control"
+                value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            <div class="form-group">
+                <label for="clId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Leader</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="clId" id="clId" data-live-search="true" data-size="10">
+                        <option value="@Some">Not select</option>
+                        @for(cl <- data._4) {
+                        <option value="@cl.userId">@cl.roleId - @cl.firstName @cl.lastName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cmId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Moderator</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="cmId" id="cmId" data-live-search="true" data-size="10">
+                        <option value="@Some">Not select</option>
+                        @for(cm <- data._5) {
+                        <option value="@cm.userId">@cm.roleId - @cm.firstName @cm.lastName</option>
+                        }
+                    </select>
+                </div>
+            </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
-                    <input type="submit" value="Save assign" class="btn btn-primary">
+                    <input type="submit" value="Assign" class="btn btn-primary">
                 </div>
             </div>
         </form>
     </div>
-    }
+}
