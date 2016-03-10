@@ -133,6 +133,7 @@ INSERT INTO Permission VALUES ('user delete', 'user.delete');
 INSERT INTO Permission VALUES ('user list', 'user.list');
 INSERT INTO Permission VALUES ('user edit', 'user.edit');
 INSERT INTO Permission VALUES ('user update', 'user.update');
+
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
