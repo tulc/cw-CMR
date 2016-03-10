@@ -50,7 +50,7 @@ class UserDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider) e
 
   def findByRole(roleId : String) : Future[Seq[User]] = db.run(users.filter(_.roleId === roleId).result)
 
-  def findAll : Future[Seq[User]] = db.run(users.result)
+  def findAll : Future[Seq[User]] = db.run(users.sortBy(_.userId.desc).result)
 
   def insert(user:User) = db.run{
     val date = Option(new Date(Calendar.getInstance().getTime.getTime))
@@ -59,4 +59,11 @@ class UserDAO @Inject()(protected val dbConfigProvider:DatabaseConfigProvider) e
   }
 
   def delete(userId: Int) = db.run(users.filter(_.userId === userId).delete)
+
+  def update(userId: Int, user: User): Future[Int] = {
+    val queryUpdate = for {
+      u <- users if u.userId === userId
+    } yield (u.firstName,u.lastName,u.email,u.password, u.isActive, u.roleId)
+    db.run(queryUpdate.update((user.firstName,user.lastName,user.email,BCrypt.hashpw(user.password, BCrypt.gensalt()),user.isActive,user.roleId)))
+  }
 }

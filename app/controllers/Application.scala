@@ -10,7 +10,6 @@ import play.api.data.Forms._
 import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import scala.concurrent.duration._
 
 import scala.concurrent.Future
 

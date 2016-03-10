@@ -129,9 +129,10 @@ INSERT INTO Permission VALUES ('save academicseasons', 'management.academicseaso
 INSERT INTO Permission VALUES ('save info', 'management.infocourseeachacademicseason.save');
 INSERT INTO Permission VALUES ('user create', 'user.create');
 INSERT INTO Permission VALUES ('user save', 'user.save');
-INSERT INTO Permission VALUES ('user edit', 'user.edit');
 INSERT INTO Permission VALUES ('user delete', 'user.delete');
 INSERT INTO Permission VALUES ('user list', 'user.list');
+INSERT INTO Permission VALUES ('user edit', 'user.edit');
+INSERT INTO Permission VALUES ('user update', 'user.update');
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -174,6 +175,7 @@ INSERT INTO Role_Permission VALUES ('ADM', 13);
 INSERT INTO Role_Permission VALUES ('ADM', 14);
 INSERT INTO Role_Permission VALUES ('ADM', 15);
 INSERT INTO Role_Permission VALUES ('ADM', 16);
+INSERT INTO Role_Permission VALUES ('ADM', 17);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);

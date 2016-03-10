@@ -36,6 +36,8 @@ GET         /users                                controllers.UserController.lis
 GET         /users/new                            controllers.UserController.create
 POST        /users                                controllers.UserController.save
 POST        /users/:id/delete                     controllers.UserController.delete(id:Int)
+GET         /users/:id                            controllers.UserController.edit(id:Int)
+POST        /users/:id                            controllers.UserController.update(id:Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                         controllers.Assets.versioned(path="/public", file: Asset)

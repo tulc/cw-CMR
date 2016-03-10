@@ -29,6 +29,7 @@ class UserController @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messa
       "isActive" -> nonEmptyText(1, 1),
       "roleId" -> nonEmptyText
     )(createApply)(_.map(u => (u.userId, u.firstName, u.lastName, u.email, "", u.createDate, u.isActive + "", u.roleId)))
+      .verifying("Please try again", result => result.isDefined)
   )
 
   def createApply(userId: Option[Int], firstName: String, lastName: String, email: String, password: String,
@@ -45,6 +46,41 @@ class UserController @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messa
   def list = AsyncStack(AuthorityKey -> roleDAO.authority("user.list")) { implicit request =>
     val userLogin = loggedIn
     userDAO.findAll.map(listUsers => Ok(views.html.users(listUsers, userLogin)))
+  }
+
+  def update(userId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("user.update")) { implicit request =>
+    val userLogin = loggedIn
+
+    userForm.bindFromRequest.fold(
+      formWithError => {
+        roleDAO.list.map(listRole => BadRequest(views.html.userEditForm(userId,formWithError, listRole, userLogin)))
+      },
+      user => {
+        userDAO.update(userId, user.get).map(count =>
+            if(count > 0){
+              Redirect(routes.UserController.list()).flashing("success" -> "User has been updated")
+            }else{
+              Redirect(routes.UserController.list()).flashing("error" -> "User update failed")
+            }
+        )
+      }
+    )
+  }
+
+  def edit(userId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("user.edit")) { implicit request =>
+    val userLogin = loggedIn
+
+    val userForEdit = for {
+      user <- userDAO.findUserById(userId)
+      listRole <- roleDAO.list
+    } yield (user, listRole)
+
+    userForEdit.map{ case (user, listRole) =>
+      user match {
+        case Some(c) => Ok(views.html.userEditForm(userId, userForm.fill(user), listRole, userLogin))
+        case None => NotFound(views.html.notFound())
+      }
+    }
   }
 
   def save = AsyncStack(AuthorityKey -> roleDAO.authority("user.save")) { implicit request =>
@@ -65,10 +101,6 @@ class UserController @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messa
         )
       }
     )
-  }
-
-  def edit = AsyncStack(AuthorityKey -> roleDAO.authority("user.edit")) { implicit request =>
-    ???
   }
 
   def delete(userId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("user.delete")) { implicit request =>
