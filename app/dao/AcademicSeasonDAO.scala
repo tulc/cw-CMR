@@ -35,6 +35,8 @@ class AcademicSeasonDAO @Inject()(protected val dbConfigProvider:DatabaseConfigP
 
   def findAll :Future[Seq[AcademicSeason]] = db.run(academicSeasons.filter(_.endDate > new Date(new util.Date().getTime)).result)
 
+  def findAllAny :Future[Seq[AcademicSeason]] = db.run(academicSeasons.sortBy(_.endDate.asc).result)
+
   def findById(id: Int): Future[Option[AcademicSeason]] =
     db.run(academicSeasons.filter(_.academicSeasonId === id).result.headOption)
 

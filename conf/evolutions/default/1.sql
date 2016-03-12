@@ -133,7 +133,6 @@ INSERT INTO Permission VALUES ('user delete', 'user.delete');
 INSERT INTO Permission VALUES ('user list', 'user.list');
 INSERT INTO Permission VALUES ('user edit', 'user.edit');
 INSERT INTO Permission VALUES ('user update', 'user.update');
-
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -210,14 +209,20 @@ INSERT INTO [User] VALUES
 -- INSERT INTO [User] VALUES ('Test', 'Test', 'Test@gmailcom', '123', DEFAULT, 1);
 
 INSERT INTO Faculty VALUES ('Computer Science', 2, 3, 1);
+INSERT INTO Faculty VALUES ('Finance', 2, 3, 1);
 
 INSERT INTO Course VALUES ('C00001', 'Software Engineering',1);
 INSERT INTO Course VALUES ('C00002', 'Database Analyst', 1);
+INSERT INTO Course VALUES ('F00001', 'Business Management', 2);
+INSERT INTO Course VALUES ('F00002', 'Marketing', 2);
 
-INSERT INTO AcademicSeason VALUES ('Spring 2016', GETDATE(), GETDATE() + 150)
+INSERT INTO AcademicSeason VALUES ('Spring 2016', '2016-01-01', '2016-06-30')
+INSERT INTO AcademicSeason VALUES ('Summer 2016', '2016-07-01', '2016-12-31')
 
 INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00001', 1, 5, 5, 4)
 INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00002', 1, 0, 5, 4)
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00001', 1, 0, 5 , NULL )
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00002', 1, 0, 5 , NULL )
 -- 5 student 5 cw1
 INSERT INTO Score VALUES (20, 1, 'C00001', 1);
 INSERT INTO Score VALUES (70, 1, 'C00001', 1);
