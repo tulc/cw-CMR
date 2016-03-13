@@ -13,7 +13,7 @@ import scala.concurrent.Future
   */
 @Singleton
 class RoleDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+  extends HasDatabaseConfigProvider[JdbcProfile] with PermissionComponent{
 
   import driver.api._
 
@@ -23,13 +23,6 @@ class RoleDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     def description = column[String]("Description")
     def isActive = column[Char]("isActive")
     def * = (roleId, name, description, isActive) <>((Role.apply _).tupled, Role.unapply _)
-  }
-
-  class Permissions(tag: Tag) extends Table[Permission](tag, "Permission") {
-    def permissionId = column[Int]("PermissionId", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("Name")
-    def path = column[String]("Path")
-    def * = (permissionId, name, path) <>((Permission.apply _).tupled, Permission.unapply _)
   }
 
   class RolesPermissions(tag: Tag) extends Table[RolePermission](tag, "Role_Permission") {

@@ -1,0 +1,34 @@
+@(data: Seq[Permission], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+
+@main("Course Monitoring Reports", "Permission", user) {
+    <div class="row div-table-search">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="table-text-search">
+                <input type="text" class="form-control" placeholder="Search information" />
+                <span class="fa fa-search search-icon"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th class="header">Id</th>
+                    <th class="header">Name</th>
+                    <th class="header">Path</th>
+                    <th class="header">#</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(c <- data) {
+                <tr>
+                    <td>@c.permissionId</td>
+                    <td>@c.name</td>
+                    <td>@c.path</td>
+                    <td><a class="btn btn-primary" href="#">Detail</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

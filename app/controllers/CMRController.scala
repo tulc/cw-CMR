@@ -21,7 +21,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
                               academicSeasonDAO: AcademicSeasonDAO, infoCourseEachAcademicSeasonDAO: InfoCourseEachAcademicSeasonDAO)
   extends Controller with AuthConfigImpl with AuthElement {
 
-  def get(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.get")) { implicit request =>
+  def get(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr.get")) { implicit request =>
     val userLogin = loggedIn
     val cmrPage = for {
       cmr <- cmrDAO.findCMRById(cmrId)
@@ -38,7 +38,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     )
   }
 
-  def add(courseId: String, academicSeasonId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.add")) { implicit request =>
+  def add(courseId: String, academicSeasonId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr.add")) { implicit request =>
     val userLogin = loggedIn
     val checkExist = for {
       course <- courseDAO.findById(courseId)
@@ -57,13 +57,13 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     }
   }
 
-  def delete(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.delete")) { implicit request =>
+  def delete(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr.delete")) { implicit request =>
     cmrDAO.removeCMRById(cmrId).map(rowRemoved =>
       Ok(rowRemoved.toString)
     )
   }
 
-  def submit(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.submit")) { implicit request =>
+  def submit(cmrId: Int) = AsyncStack(AuthorityKey -> roleDAO.authority("cmr.submit")) { implicit request =>
     val userLogin = loggedIn
     //TODO: Refactor here solution is : using form
     userLogin.roleId match {
@@ -104,7 +104,7 @@ class CMRController @Inject()(cmrDAO: CMRDAO, courseDAO: CourseDAO, val userDAO:
     }
   }
 
-  def list = AsyncStack(AuthorityKey -> roleDAO.authority("cmr-report.list")) { implicit request =>
+  def list = AsyncStack(AuthorityKey -> roleDAO.authority("cmr.list")) { implicit request =>
     val userLogin = loggedIn
     cmrDAO.findByUser(userLogin.roleId, userLogin.userId.get).map(cmrs =>
       Ok(views.html.reportes(cmrs,userLogin))

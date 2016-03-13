@@ -58,7 +58,7 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
     } yield (faculty,course,academic, userCL, userCM)
   }
 
-  def create = AsyncStack(AuthorityKey -> roleDAO.authority("management.create")) { implicit request =>
+  def courseCreate = AsyncStack(AuthorityKey -> roleDAO.authority("management.course.create")) { implicit request =>
     val userLogin = loggedIn
 
     loadPageData.map(data =>
@@ -66,7 +66,7 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
     )
   }
   //TODO: Find the way better than that
-  def saveCourse = AsyncStack(AuthorityKey -> roleDAO.authority("management.courses.save")) { implicit request =>
+  def saveCourse = AsyncStack(AuthorityKey -> roleDAO.authority("management.course.save")) { implicit request =>
     val userLogin = loggedIn
 
     courseForm.bindFromRequest.fold(
@@ -77,16 +77,16 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
         courseDAO.findById(course.courseId).map{ isCourseExist =>
           if(isCourseExist.isEmpty){
             courseDAO.insert(course)
-            Redirect(routes.ManagementToolController.create()).flashing("success" -> "Course %s has been created".format(course.courseId))
+            Redirect(routes.ManagementToolController.courseCreate()).flashing("success" -> "Course %s has been created".format(course.courseId))
           }else{
-            Redirect(routes.ManagementToolController.create()).flashing("error" -> "CourseId %s is existed".format(course.courseId))
+            Redirect(routes.ManagementToolController.courseCreate()).flashing("error" -> "CourseId %s is existed".format(course.courseId))
           }
         }
       }
     )
   }
 
-  def saveAcademicSeasons = AsyncStack(AuthorityKey -> roleDAO.authority("management.academicseasons.save")) { implicit request =>
+  def saveAcademicSeasons = AsyncStack(AuthorityKey -> roleDAO.authority("management.academic.save")) { implicit request =>
     val userLogin = loggedIn
 
     academicSeasonForm.bindFromRequest.fold(
@@ -95,12 +95,12 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
       },
       academicSeason => {
         academicSeasonDAO.insert(academicSeason)
-        Future.successful{Redirect(routes.ManagementToolController.create()).flashing("success" -> "Academic seasons %s has been created".format(academicSeason.name))}
+        Future.successful{Redirect(routes.ManagementToolController.courseCreate()).flashing("success" -> "Academic seasons %s has been created".format(academicSeason.name))}
       }
     )
   }
 
-  def saveInfoCourseEachAcademicSeasons = AsyncStack(AuthorityKey -> roleDAO.authority("management.infocourseeachacademicseason.save")) { implicit request =>
+  def saveInfoCourseEachAcademicSeasons = AsyncStack(AuthorityKey -> roleDAO.authority("management.assign-course-academic.save")) { implicit request =>
     val userLogin = loggedIn
     infoCourseEachAcademicSeasonForm.bindFromRequest.fold(
       formWithError => {
@@ -110,8 +110,8 @@ class ManagementToolController @Inject()(courseDAO: CourseDAO, val userDAO: User
         infoCourseEachAcademicSeasonDAO.findByPrimaryKey(info.courseId,info.academicSeasonId).map(checkInfoExist =>
           if(checkInfoExist.isEmpty){
             infoCourseEachAcademicSeasonDAO.insert(info)
-            Redirect(routes.ManagementToolController.create()).flashing("success" -> "Assigned success")
-          }else Redirect(routes.ManagementToolController.create()).flashing("error" -> "Assigned error. Because assigning between course and academic year has been available. Please check carefully")
+            Redirect(routes.ManagementToolController.courseCreate()).flashing("success" -> "Assigned success")
+          }else Redirect(routes.ManagementToolController.courseCreate()).flashing("error" -> "Assigned error. Because assigning between course and academic year has been available. Please check carefully")
         )
       }
     )

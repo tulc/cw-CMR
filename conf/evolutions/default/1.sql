@@ -9,8 +9,8 @@ CREATE TABLE [Role] (
 
 CREATE TABLE Permission (
   PermissionId INT PRIMARY KEY IDENTITY (1, 1),
-  Name         VARCHAR(50) NOT NULL,
-  Path         VARCHAR(50) NOT NULL
+  Path         VARCHAR(50) NOT NULL,
+  Name         VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Role_Permission (
@@ -38,8 +38,8 @@ CREATE TABLE Faculty (
 );
 
 CREATE TABLE Course (
-  CourseId VARCHAR(10) PRIMARY KEY,
-  Title    VARCHAR(50) NOT NULL,
+  CourseId  VARCHAR(10) PRIMARY KEY,
+  Title     VARCHAR(50) NOT NULL,
   FacultyId INT FOREIGN KEY REFERENCES Faculty (FacultyId),
 );
 
@@ -116,23 +116,24 @@ INSERT INTO [Role] VALUES ('CM', 'Course Moderator', 'CM of course', 1);
 INSERT INTO [Role] VALUES ('CL', 'Course Leader', 'CL of course', 1);
 INSERT INTO [Role] VALUES ('GUEST', 'Guest', 'Guest account for each faculty', 1);
 
-INSERT INTO Permission VALUES ('index', 'index');
-INSERT INTO Permission VALUES ('list courses', 'courses.list');
-INSERT INTO Permission VALUES ('view detail cmr report', 'cmr-report.get');
-INSERT INTO Permission VALUES ('add new cmr report', 'cmr-report.add');
-INSERT INTO Permission VALUES ('delete cmr report', 'cmr-report.delete');
-INSERT INTO Permission VALUES ('submit cmr report', 'cmr-report.submit');
-INSERT INTO Permission VALUES ('list cmr report', 'cmr-report.list');
-INSERT INTO Permission VALUES ('management courses', 'management.create');
-INSERT INTO Permission VALUES ('save courses', 'management.courses.save');
-INSERT INTO Permission VALUES ('save academicseasons', 'management.academicseasons.save');
-INSERT INTO Permission VALUES ('save info', 'management.infocourseeachacademicseason.save');
-INSERT INTO Permission VALUES ('user create', 'user.create');
-INSERT INTO Permission VALUES ('user save', 'user.save');
-INSERT INTO Permission VALUES ('user delete', 'user.delete');
-INSERT INTO Permission VALUES ('user list', 'user.list');
-INSERT INTO Permission VALUES ('user edit', 'user.edit');
-INSERT INTO Permission VALUES ('user update', 'user.update');
+INSERT INTO Permission VALUES ('index', 'View page index');
+INSERT INTO Permission VALUES ('course.list', 'View courses');
+INSERT INTO Permission VALUES ('cmr.get', 'View detail cmr report');
+INSERT INTO Permission VALUES ('cmr.add', 'Add new cmr report');
+INSERT INTO Permission VALUES ('cmr.delete', 'Delete cmr report');
+INSERT INTO Permission VALUES ('cmr.submit', 'Submit cmr report');
+INSERT INTO Permission VALUES ('cmr.list', 'View cmrs report');
+INSERT INTO Permission VALUES ('management.course.create', 'Management courses and academic');
+INSERT INTO Permission VALUES ('management.course.save', 'Save new courses');
+INSERT INTO Permission VALUES ('management.academic.save', 'Save new academic season');
+INSERT INTO Permission VALUES ('management.assign-course-academic.save', 'Assign course to academic');
+INSERT INTO Permission VALUES ('user.create', 'View form create user');
+INSERT INTO Permission VALUES ('user.save', 'Create new user');
+INSERT INTO Permission VALUES ('user.delete', 'Delete user');
+INSERT INTO Permission VALUES ('user.list', 'View users');
+INSERT INTO Permission VALUES ('user.edit', 'Edit user');
+INSERT INTO Permission VALUES ('user.update', 'Update user');
+INSERT INTO Permission VALUES ('permission.list', 'View Permissions');
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -176,6 +177,8 @@ INSERT INTO Role_Permission VALUES ('ADM', 14);
 INSERT INTO Role_Permission VALUES ('ADM', 15);
 INSERT INTO Role_Permission VALUES ('ADM', 16);
 INSERT INTO Role_Permission VALUES ('ADM', 17);
+--Permission
+INSERT INTO Role_Permission VALUES ('ADM', 18);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);
@@ -211,7 +214,7 @@ INSERT INTO [User] VALUES
 INSERT INTO Faculty VALUES ('Computer Science', 2, 3, 1);
 INSERT INTO Faculty VALUES ('Finance', 2, 3, 1);
 
-INSERT INTO Course VALUES ('C00001', 'Software Engineering',1);
+INSERT INTO Course VALUES ('C00001', 'Software Engineering', 1);
 INSERT INTO Course VALUES ('C00002', 'Database Analyst', 1);
 INSERT INTO Course VALUES ('F00001', 'Business Management', 2);
 INSERT INTO Course VALUES ('F00002', 'Marketing', 2);
@@ -221,8 +224,8 @@ INSERT INTO AcademicSeason VALUES ('Summer 2016', '2016-07-01', '2016-12-31')
 
 INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00001', 1, 5, 5, 4)
 INSERT INTO InfoCourseEachAcademicSeason VALUES ('C00002', 1, 0, 5, 4)
-INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00001', 1, 0, 5 , NULL )
-INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00002', 1, 0, 5 , NULL )
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00001', 1, 0, 5, NULL)
+INSERT INTO InfoCourseEachAcademicSeason VALUES ('F00002', 1, 0, 5, NULL)
 -- 5 student 5 cw1
 INSERT INTO Score VALUES (20, 1, 'C00001', 1);
 INSERT INTO Score VALUES (70, 1, 'C00001', 1);

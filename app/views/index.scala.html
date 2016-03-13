@@ -1,26 +1,27 @@
-@(percentComplete: Seq[PercentageCompletedCMR], percentResponse: Seq[PercentageResponseCMR], user: User)
-
+@(percentComplete: Seq[PercentageCompletedCMR], percentResponse: Seq[PercentageResponseCMR], courseWithoutCLCM: Option[Seq[CourseWithoutCLCM]],
+        courseWithoutCMR: Option[Seq[CourseWithoutCMR]], cmrWithoutResponse:Option[Seq[CMRWithoutResponse]], user: User)
     @main("Course Monitoring Reports", "Overview", user) {
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css")">
         <script src="@routes.Assets.versioned("lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("js/index.js")" type="text/javascript"></script>
 
         <div class="col-sm-12 col-md-12 col-lg-12">
-            <div class="input-daterange input-group" id="datepicker">
-                <span class="input-group-addon"><strong>View report from</strong></span>
-                <input type="text" id="formDate" class="input-md form-control" name="startDate" />
-                <span class="input-group-addon"><strong>to</strong></span>
-                <input type="text" id="endDate" class="input-md form-control" name="endDate" />
-                <div class="input-group-btn">
-                    <button id="btnViewReport" type="button" class="btn btn-primary btn-default"
-                    data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Report">
-                        <span class="fa fa-search"></span>
-                    </button>
+            <form method="get" action="@routes.Application.index()">
+                <div class="input-daterange input-group" id="datepicker">
+                    <span class="input-group-addon"><strong>View report from</strong></span>
+                    <input type="text" id="fromDate" class="input-md form-control" name="fromDate" />
+                    <span class="input-group-addon"><strong>to</strong></span>
+                    <input type="text" id="toDate" class="input-md form-control" name="toDate" />
+                    <div class="input-group-btn">
+                        <button id="btnViewReport" type="submit" class="btn btn-primary btn-default"
+                        data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing Report">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </form>
             <hr/>
             <h3>Statistics</h3>
-            @*<div id="chart-container" style="min-width: 310px ; height: 400px ; margin: 0 auto"></div>*@
             <div class="row">
                 <div class="col-md-6 col-lg-6">
                     <table class="table">
@@ -69,9 +70,131 @@
             <hr/>
             <h3>Exception</h3>
             <div class="row">
-                Course without CM or CL
-                Course without CMRs
-                CMRs without response
+                @if(courseWithoutCLCM.nonEmpty) {
+                    <div class="col-md-12 col-lg-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th colspan="9" class="text-center">Course without CM or CL</th>
+                                </tr>
+                                <tr>
+                                    <th class="header">Academic</th>
+                                    <th class="header">Course Id</th>
+                                    <th class="header">Course</th>
+                                    <th class="header">Start</th>
+                                    <th class="header">End</th>
+                                    <th class="header">Student</th>
+                                    <th class="header">CL</th>
+                                    <th class="header">CM</th>
+                                    <th class="header">#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if(courseWithoutCLCM.get.nonEmpty) {
+                                @for(d <- courseWithoutCLCM.get) {
+                                    <tr>
+                                        <td>@d.academicSeasonName</td>
+                                        <td>@d.courseId</td>
+                                        <td>@d.title</td>
+                                        <td>@d.startDate</td>
+                                        <td>@d.endDate</td>
+                                        <td>@d.studentNumber</td>
+                                        <td>@if(d.clId.nonEmpty){<span class="text-success">Assign</span>}else{<span class="text-danger">Not assign</span>}</td>
+                                        <td>@if(d.cmId.nonEmpty){<span class="text-success">Assign</span>}else{<span class="text-danger">Not assign</span>}</td>
+                                        <td><a href="#">More</a></td>
+                                    </tr>
+                                }
+                            } else{
+                                <tr>
+                                    <td colspan="9">No course without CL or CM from that date</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                @if(courseWithoutCMR.nonEmpty) {
+                    <div class="col-md-12 col-lg-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th colspan="8" class="text-center">Course without CMR</th>
+                                </tr>
+                                <tr>
+                                    <th class="header">Academic</th>
+                                    <th class="header">Course Id</th>
+                                    <th class="header">Course</th>
+                                    <th class="header">Faculty</th>
+                                    <th class="header">Start</th>
+                                    <th class="header">End</th>
+                                    <th class="header">Status</th>
+                                    <th class="header">#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if(courseWithoutCMR.get.nonEmpty) {
+                                @for(d <- courseWithoutCMR.get) {
+                                    <tr>
+                                        <td>@d.academicSeasonName</td>
+                                        <td>@d.courseId</td>
+                                        <td>@d.title</td>
+                                        <td>@d.facultyName</td>
+                                        <td>@d.startDate</td>
+                                        <td>@d.endDate</td>
+                                        <td><span class="text-danger">No CMR</span></td>
+                                        <td><a href="#">More</a></td>
+                                    </tr>
+                                }
+                            } else{
+                                <tr>
+                                    <td colspan="8">No course without CMR from that date</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                @if(cmrWithoutResponse.nonEmpty) {
+                    <div class="col-md-12 col-lg-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th colspan="8" class="text-center">CMR without response</th>
+                                </tr>
+                                <tr>
+                                    <th class="header">CMRId</th>
+                                    <th class="header">Status</th>
+                                    <th class="header">Academic</th>
+                                    <th class="header">Course</th>
+                                    <th class="header">Created</th>
+                                    <th class="header">Submitted</th>
+                                    <th class="header">Approved</th>
+                                    <th class="header">#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if(cmrWithoutResponse.get.nonEmpty) {
+                                @for(d <- cmrWithoutResponse.get) {
+                                    <tr>
+                                        <td>@d.cmrId</td>
+                                        <td>@d.status</td>
+                                        <td>@d.academicSeasonName</td>
+                                        <td>@d.title</td>
+                                        <td>@d.createdDate</td>
+                                        <td>@d.submittedDate</td>
+                                        <td>@d.approvedDate</td>
+                                        <td><a href="#">More</a></td>
+                                    </tr>
+                                }
+                            } else{
+                                <tr>
+                                    <td colspan="8">CMR without response from that date</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
     }

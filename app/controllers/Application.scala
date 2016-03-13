@@ -34,8 +34,19 @@ class Application @Inject()(val userDAO: UserDAO, val messagesApi: MessagesApi, 
 
   def index = AsyncStack(AuthorityKey -> roleDAO.authority("index")) { implicit request =>
     val userLogin = loggedIn
-    utilStatisticReportDAO.percentageCompletedCMRs.zip(utilStatisticReportDAO.percentageResponse).map { case (percentCompeted, percentResponse) =>
-      Ok(views.html.index(percentCompeted, percentResponse, userLogin))
+    val fromDate: Option[String] = request.getQueryString("fromDate")
+    val toDate: Option[String] = request.getQueryString("toDate")
+    (fromDate, toDate) match {
+      case (Some(from),Some(to)) => for {
+          percentComplete <- utilStatisticReportDAO.percentageCompletedCMRs
+          percentResponse <- utilStatisticReportDAO.percentageResponse
+          courseWithoutCLCM <- utilStatisticReportDAO.courseWithoutCLCM(from,to)
+          courseWithoutCMR <- utilStatisticReportDAO.courseWithoutCMR(from,to)
+          cmrWithoutResponse <- utilStatisticReportDAO.cmrWithoutResponse(from,to)
+        } yield Ok(views.html.index(percentComplete, percentResponse, Some(courseWithoutCLCM), Some(courseWithoutCMR), Some(cmrWithoutResponse), userLogin))
+      case _ => utilStatisticReportDAO.percentageCompletedCMRs.zip(utilStatisticReportDAO.percentageResponse).map { case (percentCompeted, percentResponse) =>
+          Ok(views.html.index(percentCompeted, percentResponse, None, None, None, userLogin))
+      }
     }
   }
 

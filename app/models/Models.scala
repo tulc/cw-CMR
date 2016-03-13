@@ -33,6 +33,6 @@ case class GradeDistribution(cmrId: Int, assessmentMethodId: Int, distributionTy
 
 case class AssessmentMethod(assessmentMethodId: Int, priority: Int, name: String, description: String, isActive: Char)
 
-case class Permission(permissionId: Int, name: String, path: String)
+case class Permission(permissionId: Int, path: String, name: String)
 
 case class RolePermission(roleId: String, permissionId: Int)

@@ -36,7 +36,7 @@ class UserController @Inject()(val userDAO: UserDAO, roleDAO: RoleDAO, val messa
                   createDate: Option[Date], isActive: String, roleId: String) =
     Option(User(userId, firstName, lastName, email, password, createDate, isActive.charAt(0), roleId))
 
-  def create = AsyncStack(AuthorityKey -> roleDAO.authority("user.create")) { implicit request =>
+  def create = AsyncStack(AuthorityKey -> roleDAO.authority("users.create")) { implicit request =>
     val userLogin = loggedIn
     roleDAO.list.map(listRole =>
       Ok(views.html.userCreateForm(userForm, listRole, userLogin))
