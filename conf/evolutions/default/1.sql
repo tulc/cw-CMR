@@ -134,6 +134,7 @@ INSERT INTO Permission VALUES ('user.list', 'View users');
 INSERT INTO Permission VALUES ('user.edit', 'Edit user');
 INSERT INTO Permission VALUES ('user.update', 'Update user');
 INSERT INTO Permission VALUES ('permission.list', 'View Permissions');
+INSERT INTO Permission VALUES ('testTool.list', 'View Test tool');
 --Permission index
 INSERT INTO Role_Permission VALUES ('ADM', 1);
 INSERT INTO Role_Permission VALUES ('PVC', 1);
@@ -156,6 +157,8 @@ INSERT INTO Role_Permission VALUES ('CL', 3);
 INSERT INTO Role_Permission VALUES ('CL', 4);
 --Permission delete cmr
 INSERT INTO Role_Permission VALUES ('CL', 5);
+INSERT INTO Role_Permission VALUES ('CM', 5);
+INSERT INTO Role_Permission VALUES ('DLT', 5);
 --Permission submit cmr
 INSERT INTO Role_Permission VALUES ('DLT', 6);
 INSERT INTO Role_Permission VALUES ('CM', 6);
@@ -179,6 +182,8 @@ INSERT INTO Role_Permission VALUES ('ADM', 16);
 INSERT INTO Role_Permission VALUES ('ADM', 17);
 --Permission
 INSERT INTO Role_Permission VALUES ('ADM', 18);
+--Test tools
+INSERT INTO Role_Permission VALUES ('ADM', 19);
 
 INSERT INTO AssessmentMethod VALUES (0, 'CW1', 'Coursework 1', DEFAULT);
 INSERT INTO AssessmentMethod VALUES (1, 'CW2', 'Coursework 2', DEFAULT);
@@ -238,13 +243,6 @@ INSERT INTO Score VALUES (20, 2, 'C00001', 1);
 INSERT INTO Score VALUES (30, 2, 'C00001', 1);
 INSERT INTO Score VALUES (60, 2, 'C00001', 1);
 INSERT INTO Score VALUES (80, 2, 'C00001', 1);
--- 5 student 5 overall
-INSERT INTO Score VALUES (30, 6, 'C00001', 1);
-INSERT INTO Score VALUES (45, 6, 'C00001', 1);
-INSERT INTO Score VALUES (35, 6, 'C00001', 1);
-INSERT INTO Score VALUES (40, 6, 'C00001', 1);
-
-INSERT INTO Score VALUES (85, 6, 'C00001', 1);
 
 # --- !Downs
 DROP TABLE Score;

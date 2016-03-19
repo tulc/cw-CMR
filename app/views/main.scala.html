@@ -56,10 +56,10 @@
                                 }
                                 @if(user.roleId == "ADM") {
                                     <li role="presentation"><a href="#"><span class="fa fa-university"></span> Faculties</a></li>
-                                    <li role="presentation"><a href="@routes.UserController.list"><span class="fa fa-users"></span> Users</a></li>
-                                    <li role="presentation"><a href="@routes.PermissionController.list"><span class="fa fa-key"></span> Permission</a></li>
-                                    <li role="presentation"><a href="@routes.ManagementToolController.courseCreate"><span class="fa fa-briefcase"></span> Course management</a></li>
-                                    <li role="presentation"><a href="#"><span class="fa fa-wrench"></span> Test tools</a></li>
+                                    <li role="presentation"><a href="@routes.UserController.list()"><span class="fa fa-users"></span> Users</a></li>
+                                    <li role="presentation"><a href="@routes.PermissionController.list()"><span class="fa fa-key"></span> Permission</a></li>
+                                    <li role="presentation"><a href="@routes.ManagementToolController.courseCreate()"><span class="fa fa-briefcase"></span> Course management</a></li>
+                                    <li role="presentation"><a href="@routes.Application.testTool()"><span class="fa fa-wrench"></span> Test tools</a></li>
                                 }
                                 <li><hr/></li>
                                 <li role="presentation"><a href="#"><span class="fa fa-user"></span> Profile</a></li>

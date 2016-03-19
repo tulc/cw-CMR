@@ -1,4 +1,4 @@
-@(data: (Seq[CMR], Option[Course], Option[AcademicSeason], Option[InfoCourseEachAcademicSeason],
+@(data: (Option[CMR], Option[Course], Option[AcademicSeason], Option[InfoCourseEachAcademicSeason],
         Option[User], Seq[GradeStatistic], Seq[GradeDistribution], Seq[AssessmentMethod]), user: User)
 
     @main("Course Monitoring Reports", "Course Monitoring Report no." + data._1.head.cmrId, user) {
@@ -85,6 +85,9 @@
                 <tr class="table-title">
                     <th colspan="3">Action to be taken</th>
                 </tr>
+                <tr>
+                    <td>@Html(data._1.head.comment.getOrElse(""))</td>
+                </tr>
             </thead>
             <tbody>
             </tbody>
@@ -104,7 +107,9 @@
                         </ol>
                     </td>
                 </tr>
-                <tr><td><textarea id="txt-comment" name="comment" class="form-control" rows="3" placeholder="Write comment"></textarea></td></tr>
+                <tr>
+                    <td><textarea id="txt-comment" name="comment" class="form-control" rows="3" placeholder="Write comment"></textarea></td>
+                </tr>
                 <tr>
                     <td>
                         @*If user role is CL and report status is Created -> you can view this section*@
@@ -118,35 +123,35 @@
                             @*<input type="button" class="btn btn-danger" value="Reject notSupportYet"/>*@
                             <input type="button" id="btnSubmit" class="btn btn-primary"
                             data-href="@routes.CMRController.submit(data._1.head.cmrId)" value="Approve"/>
+                            <input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Reject Report"/>
                         }
                         @*If user role is DLT and report status is approved -> you can view this section*@
                         @if(user.roleId == "DLT" && data._1.head.status == "Approved") {
                             <input type="button" id="btnSubmit" class="btn btn-primary" value="Comment"
                             data-href="@routes.CMRController.submit(data._1.head.cmrId)" />
+                            <input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Reject Report"/>
                         }
                     </td>
                 </tr>
             </table>
         </form>
-        @if(user.roleId == "CL" && data._1.head.status == "Created") {
-            <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="modalRemoveConfirm" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Confirm</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Do you want to delete this course monitoring report ?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <input type="button" id="btnDelete" data-href="@routes.CMRController.delete(data._1.head.cmrId)"
-                            class="btn btn-danger" value="Delete" />
-                        </div>
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="modalRemoveConfirm" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Confirm</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you want to reject this course monitoring report ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <input type="button" id="btnDelete" data-href="@routes.CMRController.delete(data._1.head.cmrId)"
+                        class="btn btn-danger" value="Reject" />
                     </div>
                 </div>
             </div>
-        }
+        </div>
         <div class="modal fade" id="modal-notify" tabindex="-1" role="dialog" aria-labelledby="modalRemoveConfirm" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

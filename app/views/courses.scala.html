@@ -1,4 +1,5 @@
-@(data: Seq[(InfoCourseEachAcademicSeason, Option[Course], Option[Faculty], Option[AcademicSeason], Option[User], Option[User], Option[CMR])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+@(data: Seq[(InfoCourseEachAcademicSeason, Option[Course], Option[Faculty], Option[AcademicSeason], Option[User],
+        Option[User], Option[Int])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
     @main("Course Monitoring Reports", "Courses", user) {
         @flash.get("success").map { message =>
             <div class="alert alert-success">
@@ -59,13 +60,14 @@
                         <td>@c._5.map(_.firstName) @c._5.map(_.lastName)</td>
                         <td>@c._6.map(_.firstName) @c._6.map(_.lastName)</td>
                         <td>
-                            @if(user.roleId == "CL" && c._7.isEmpty) {
+                            @*&& c._4.head.endDate.getTime < (new Date()).getTime*@
+                            @if(user.roleId == "CL" && c._7.isEmpty && c._6.nonEmpty) {
                                 <form action="@routes.CMRController.add(c._1.courseId, c._4.head.academicSeasonId.get)">
                                     <button type="submit" class="btn btn-link" formmethod="post">Create report</button>
                                 </form>
                             }
                             @if(user.roleId == "CL" && c._7.nonEmpty) {
-                                <a href="@routes.CMRController.get(c._7.head.cmrId)">View</a>
+                                <a href="@routes.CMRController.get(c._7.head)">View</a>
                             }
                             @if(user.roleId == "ADM"){
                                 <a href="#" >Edit</a>

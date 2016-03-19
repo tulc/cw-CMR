@@ -7,7 +7,7 @@ import play.api.db.slick.{HasDatabaseConfigProvider, DatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
 import scala.concurrent.Future
-
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 /**
   * Created by chinhnk on 3/11/16.
   */
@@ -92,5 +92,31 @@ class UtilStatisticReportDAO @Inject()(protected val dbConfigProvider: DatabaseC
                       WHERE cmr.status != 'Commented' AND cmr.submitteddate >= ${fromDate} AND cmr.submitteddate <= ${toDate}
                       ORDER BY cmr.submitteddate""".as[CMRWithoutResponse]
     db.run(query)
+  }
+
+  def jobScanValidateCMR: Future[Seq[(Int,String,String,String,String,String,String,String,Int)]] = {
+    val query =
+      sql"""
+         SELECT CMR.CMRId, CMR.Status, Course.Title, Course.CourseId, faculty.name,
+           [User].email, [User].lastName, [User].firstName, DAY(GETDATE() - CMR.CreatedDate)
+         FROM CMR
+           JOIN Course ON CMR.CourseId = Course.courseId
+           JOIN faculty ON Course.facultyId = faculty.facultyId
+           JOIN [User] ON faculty.dltId = [User].userId
+         WHERE CMR.Status = 'Approved'
+         """.as[(Int,String,String,String,String,String,String,String,Int)]
+    db.run(query)
+  }
+
+  def deleteCMRValidate: Future[Unit] = {
+    val query =
+      sqlu"""
+         DELETE CMR
+         WHERE DAY(GETDATE() - CMR.CreatedDate) > 14
+               AND (CMR.Status = 'Approved'
+               OR CMR.Status = 'Created'
+               OR CMR.Status = 'Submitted')
+          """
+    db.run(query).map(_ => ())
   }
 }

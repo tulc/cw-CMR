@@ -2,7 +2,6 @@ package models
 
 import java.sql.Date
 
-import play.api.libs.json.Json
 import slick.jdbc.GetResult
 
 /**
@@ -26,7 +25,6 @@ object PercentageCompletedCMR {
 }
 
 object PercentageResponseCMR {
-
   implicit val percentageResponseCMRResult = GetResult(r => PercentageResponseCMR(r.<<, r.<<))
 }
 

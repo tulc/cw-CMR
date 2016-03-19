@@ -23,6 +23,58 @@
                 <strong>Opps!</strong> @message
             </div>
         }
+        <h3>Assign academic season to course</h3>
+        <form method="post" class="form-horizontal" action="@routes.ManagementToolController.saveInfoCourseEachAcademicSeasons()">
+            <div class="form-group">
+                <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course - Academic Season</label>
+                <div class="col-sm-9 col-md-9 col-lg-9">
+                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="courseId" id="courseId" data-live-search="true" data-size="10">
+                    @for(course <- data._2) {
+                        <option value="@course.courseId">@course.title</option>
+                    }
+                    </select>
+                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="academicSeasonId" id="academicSeasonId" data-live-search="true" data-size="10">
+                    @for(academic <- data._3) {
+                        <option value="@academic.academicSeasonId">@academic.name
+                            (@academic.startDate - @academic.endDate)</option>
+                    }
+                    </select>
+                </div>
+            </div>
+            @input(infoCourseEachAcademicSeasonForm("studentNumber"), '_label -> "Student number") { (id, name, value, args) =>
+                <input type="text" aria-describedby="helpBlock-@id" name="@name" class="form-control"
+                value="@value" id="@id" @toHtmlArgs(args)>
+            }
+            <div class="form-group">
+                <label for="clId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Leader</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="clId" id="clId" data-live-search="true" data-size="10">
+                        <option value="@Some()">No select</option>
+                        @for(cl <- data._4) {
+                            <option value="@cl.userId">@cl.roleId - @cl.firstName @cl.lastName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cmId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Moderator</label>
+                <div class="col-sm-9 col-md-6 col-lg-6">
+                    <select class="selectpicker" data-style="my-drop-picker" name="cmId" id="cmId" data-live-search="true" data-size="10">
+                        <option value="@Some()">No select</option>
+                        @for(cm <- data._5) {
+                            <option value="@cm.userId">@cm.roleId - @cm.firstName @cm.lastName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
+                    <input type="submit" value="Assign" class="btn btn-primary">
+                    <a href="@routes.Application.index()" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+        </form>
+        <hr/>
         <h3>Add course</h3>
         <form method="post" class="form-horizontal" action="@routes.ManagementToolController.saveCourse">
             @input(courseForm("courseId"), '_label -> "Course Id") { (id, name, value, args) =>
@@ -46,7 +98,6 @@
             <div class="form-group">
                 <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
                     <input type="submit" value="Save course" class="btn btn-primary">
-                    <a href="@routes.Application.index()" class="btn btn-danger">Cancel</a>
                 </div>
             </div>
         </form>
@@ -73,56 +124,6 @@
             <div class="form-group">
                 <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
                     <input type="submit" value="Save academic season" class="btn btn-primary">
-                </div>
-            </div>
-        </form>
-        <hr/>
-        <h3>Assign academic season to course</h3>
-        <form method="post" class="form-horizontal" action="@routes.ManagementToolController.saveInfoCourseEachAcademicSeasons()">
-            <div class="form-group">
-                <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course - Academic Season</label>
-                <div class="col-sm-9 col-md-9 col-lg-9">
-                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="courseId" id="courseId" data-live-search="true" data-size="10">
-                    @for(course <- data._2) {
-                        <option value="@course.courseId">@course.title</option>
-                    }
-                    </select>
-                    <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="academicSeasonId" id="academicSeasonId" data-live-search="true" data-size="10">
-                    @for(academic <- data._3) {
-                        <option value="@academic.academicSeasonId">@academic.name (@academic.startDate - @academic.endDate)</option>
-                    }
-                    </select>
-                </div>
-            </div>
-            @input(infoCourseEachAcademicSeasonForm("studentNumber"), '_label -> "Student number") { (id, name, value, args) =>
-                <input type="text" aria-describedby="helpBlock-@id" name="@name" class="form-control"
-                value="@value" id="@id" @toHtmlArgs(args)>
-            }
-            <div class="form-group">
-                <label for="clId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Leader</label>
-                <div class="col-sm-9 col-md-6 col-lg-6">
-                    <select class="selectpicker" data-style="my-drop-picker" name="clId" id="clId" data-live-search="true" data-size="10">
-                        <option value="@Some()">Not select</option>
-                        @for(cl <- data._4) {
-                        <option value="@cl.userId">@cl.roleId - @cl.firstName @cl.lastName</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cmId" class="col-sm-3 col-md-3 col-lg-3 control-label">Course Moderator</label>
-                <div class="col-sm-9 col-md-6 col-lg-6">
-                    <select class="selectpicker" data-style="my-drop-picker" name="cmId" id="cmId" data-live-search="true" data-size="10">
-                        <option value="@Some()">Not select</option>
-                        @for(cm <- data._5) {
-                        <option value="@cm.userId">@cm.roleId - @cm.firstName @cm.lastName</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
-                    <input type="submit" value="Assign" class="btn btn-primary">
                 </div>
             </div>
         </form>

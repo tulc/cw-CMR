@@ -1,0 +1,61 @@
+@(data: Seq[(InfoCourseEachAcademicSeason, Option[Course], Option[AcademicSeason])], user: User)(implicit flash: play.api.mvc.Flash, messages: Messages)
+    @import helper._
+
+    @implicitFieldConstructor = @{
+        FieldConstructor(bootstrapCreateInput.f)
+    }
+
+    @main("Course Monitoring Reports", "Management Tools", user) {
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-select/css/bootstrap-select.min.css")">
+        <script src="@routes.Assets.versioned("lib/bootstrap-select/js/bootstrap-select.min.js")" type="text/javascript"></script>
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @flash.get("success").map { message =>
+                <div class="alert alert-success">
+                    <strong>Done!</strong> @message
+                </div>
+            }
+            @flash.get("error").map { message =>
+                <div class="alert alert-danger">
+                    <strong>Opps!</strong> @message
+                </div>
+            }
+            <h3>Generator Test Score</h3>
+            <form method="post" class="form-horizontal" action="@routes.Application.testGenerator()">
+                <div class="form-group">
+                    <label for="facultyId" class="col-sm-3 col-md-3 col-lg-3 control-label">Available data</label>
+                    <div class="col-sm-9 col-md-9 col-lg-9">
+                        <select class="selectpicker" data-width="fit" data-style="my-drop-picker" name="courseAca" id="courseAca" data-live-search="true" data-size="10">
+                        @for(d <- data) {
+                            <option value="@d._1.courseId - @d._1.academicSeasonId">@d._2.map(_.courseId)
+                                (@d._2.map(_.title)) - @d._3.map(_.name) (@d._3.map(_.startDate) @d._3.map(_.endDate))</option>
+                        }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helpBlock-assessment" class="col-sm-3 col-md-3 col-lg-3 control-label">Assessment</label>
+                    <div class="col-sm-9 col-md-9 col-lg-9">
+                        <label class="checkbox-inline"><input type="checkbox" name="assessments" checked value="1"> CW 1</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="assessments" checked value="2"> CW 2</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="assessments" value="3"> CW 3</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="assessments" value="4"> CW 4</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="assessments" value="5"> Exam</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helpBlock-numberGenerate" class="col-sm-3 col-md-3 col-lg-3 control-label">
+                        Number Generator</label>
+                    <div class="col-sm-9 col-md-6 col-lg-6">
+                        <input type="number" aria-describedby="helpBlock-numberGenerate" name="numberGenerate"
+                        class="form-control" value="numberGenerate" id="numberGenerate" max="200" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-9 col-md-9 col-lg-9">
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                        <a href="@routes.Application.index()" class="btn btn-danger">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
