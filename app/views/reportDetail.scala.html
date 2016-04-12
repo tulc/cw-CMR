@@ -129,7 +129,7 @@
                         @if(user.roleId == "DLT" && data._1.head.status == "Approved") {
                             <input type="button" id="btnSubmit" class="btn btn-primary" value="Comment"
                             data-href="@routes.CMRController.submit(data._1.head.cmrId)" />
-                            <input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Reject Report"/>
+                            @*<input type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" value="Reject Report"/>*@
                         }
                     </td>
                 </tr>
