@@ -1,21 +1,38 @@
 This is a coursework for Enterprise Web Software Development
 =================================
 
+Create your database:
+1. Open SQL Server Management "CREATE DATABASE your-database-name".
+2. Then type "USE your-database-name".
+3. Open this file on SQL Manamgenemt "your-project-location/conf/evolutions/default/usp_createCMR.sql".
+4. Run all script in above file.
+
 Configuration :
-* You must to separate run sql "conf/evolutions/default/usp_createCMR.sql" by SQL Management Studio after you run project
-* Config your DATABASE and your MAILER for testing or running in "conf/application.conf"
-slick.dbs.default.db.url="Your url"
-slick.dbs.default.db.user="Your username"
-slick.dbs.default.db.password="Your password"
+1. Config your database.
+2. Open file "your-project-location/conf/application.conf"
+3. Go to "Database configuration"
+slick.dbs.default.db.url="jdbc:sqlserver://your-database-host:your-database-port;instance=MSSQLSERVER;databaseName=your-database-name;"
+slick.dbs.default.db.user="your-database-username"
+slick.dbs.default.db.password="your-database-password"
 
-Running project:
-Step 1 : You must install activator first "https://www.playframework.com/download"
-  * For Windows : 
-   - After install activator -> Run file activator.bat
-  * For Linux :
-   - After install activator -> Open terminal cd to your directory -> ./activator
+4. Config your mailer, go to "Mailers"
+play.mailer {
+  host = smtp.gmail.com
+  port = 465
+  ssl = true
+  tls = true
+  user = "your-google-email" #Config your username
+  password = "your-email-password"
+}
 
-Step 2 : Open your SQL Management Studio copy "conf/evolutions/default/usp_createCMR.sql" and run
+Running project in development mode:
+* For Windows : 
+	- After install activator -> Run file activator.bat
+* For Linux :
+	- After install activator -> Open terminal cd to your directory -> ./activator
 
-Coding:
-Import "SBT" project to your favor IDE (Netbean, Eclipse, Idea...) -> Running project by command "activator run"
+Team members
+Nguyen Kien Chinh
+Luu Cam Tu
+vu Manh Hung
+Okafor Chinyere Matthew
