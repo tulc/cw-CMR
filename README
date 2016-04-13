@@ -30,9 +30,22 @@ Running project in development mode:
 	- After install activator -> Run file activator.bat
 * For Linux :
 	- After install activator -> Open terminal cd to your directory -> ./activator
+	
+
+Username and password for roles (username - password):
+Admin: admin - 123
+Guest: Guest - 123
+CL: nguyenkienchinh91@gmail.com - 123
+CM: tulcgc00706@fpt.edu.vn - 123
+DLT: chinhngk@gmail.com - 123
+PVC: chinhnkgt00494@fpt.edu.vn - 123
+	
 
 Team members
 Nguyen Kien Chinh
 Luu Cam Tu
 vu Manh Hung
 Okafor Chinyere Matthew
+
+
+
